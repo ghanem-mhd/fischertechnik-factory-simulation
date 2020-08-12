@@ -168,6 +168,9 @@ void TxtHighBayWarehouse::fsmStep()
 		{
 			if (reqVGRwp && store(*reqVGRwp))
 			{
+				assert(mqttclient);
+				mqttclient->publishHBW_Ack(HBW_STORED, reqVGRwp, TIMEOUT_MS_PUBLISH);
+
 				FSM_TRANSITION( IDLE, color=green, label='workpiece\nstored' );
 			}
 			else
@@ -220,6 +223,9 @@ void TxtHighBayWarehouse::fsmStep()
 		printState(STORE_CONTAINER);
 		if (storeContainer())
 		{
+			assert(mqttclient);
+			mqttclient->publishHBW_Ack(HBW_STORED, 0, TIMEOUT_MS_PUBLISH);
+
 			FSM_TRANSITION( IDLE, color=green, label='container\nstored' );
 		}
 		else
