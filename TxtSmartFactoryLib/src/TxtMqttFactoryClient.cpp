@@ -187,8 +187,10 @@ void TxtMqttFactoryClient::disconnect(long int timeout) {
 			//remote
 			unsubTopic(TOPIC_OUTPUT_STATE_ACK, timeout);
 			//local
-			unsubTopic(TOPIC_LOCAL_VGR_DO, timeout);
+			//unsubTopic(TOPIC_LOCAL_VGR_DO, timeout);
 			unsubTopic(TOPIC_LOCAL_SSC_JOY, timeout);
+			// custom
+			unsubTopic(TOPIC_CUSTOM_VGR_DO, timeout);
 		}
 		else if (clientname == "TxtFactoryVGR")
 		{
@@ -290,8 +292,9 @@ bool TxtMqttFactoryClient::start_consume(long int timeout) {
 			//remote
 			subTopic(TOPIC_OUTPUT_STATE_ACK, timeout);
 			//local
-			subTopic(TOPIC_LOCAL_VGR_DO, timeout);
+			//subTopic(TOPIC_LOCAL_VGR_DO, timeout);
 			subTopic(TOPIC_LOCAL_SSC_JOY, timeout);
+			subTopic(TOPIC_CUSTOM_VGR_DO, timeout);
 		}
 		else if (clientname == "TxtFactoryVGR")
 		{
@@ -600,6 +603,7 @@ void TxtMqttFactoryClient::publishStateStation(const std::string station, TxtLED
 	char sts[25];
 	ft::getnowstr(sts);
 	try {
+		js_stateStation["taskID"] = currentTaskID;
 		js_stateStation["ts"] = sts;
 		js_stateStation["station"] = station;
 		js_stateStation["code"] = (int)code;
@@ -965,6 +969,7 @@ void TxtMqttFactoryClient::publishHBW_Ack(TxtHbwAckCode_t code, TxtWorkpiece* wp
 	try {
 		js_ack["ts"] = sts;
 		js_ack["code"] = (int)code;
+		js_ack["taskID"] = (int) currentTaskID;
 
 		if (wp) {
 			Json::Value js_wp;
@@ -1036,6 +1041,11 @@ void TxtMqttFactoryClient::publishSLD_Ack(TxtSldAckCode_t code, TxtWPType_t type
 	pthread_mutex_unlock(&m_mutex);
 	SPDLOG_LOGGER_DEBUG(spdlog::get("console"), "pthread_mutex_unlock publishSLD_Ack",0);
 }
+
+	void TxtMqttFactoryClient::setTaskID(int newTaskID) {
+		SPDLOG_LOGGER_TRACE(spdlog::get("console"),"setTaskID",0);
+		currentTaskID = newTaskID;
+	}
 
 
 } /* namespace ft */

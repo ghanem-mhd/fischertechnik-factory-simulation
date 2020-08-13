@@ -168,6 +168,8 @@ public:
 #define TOPIC_LOCAL_HBW_ACK      "fl/hbw/ack"
 #define TOPIC_LOCAL_SLD_ACK      "fl/sld/ack"
 
+//custom
+#define TOPIC_CUSTOM_VGR_DO    "fl/vgr/do/custom"
 
 class TxtMqttFactoryClient {
 public:
@@ -212,6 +214,11 @@ public:
 	void publishVGR_Do(TxtVgrDoCode_t code, TxtWorkpiece* wp, long timeout);
 	void publishHBW_Ack(TxtHbwAckCode_t code, TxtWorkpiece* wp, long timeout);
 	void publishSLD_Ack(TxtSldAckCode_t code, TxtWPType_t type, int value, long timeout);
+
+	int currentTaskID = 0;
+
+	// Custom
+	void setTaskID(int newTaskID);
 
 protected:
 	//Factory remote
