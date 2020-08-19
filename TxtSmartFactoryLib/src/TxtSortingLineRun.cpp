@@ -127,17 +127,18 @@ void TxtSortingLine::fsmStep()
 
 			FSM_TRANSITION( START, color=blue, label='req\nMPO' );
 			reqMPOproduced = false;
-		}
+		}*/
 		if (reqVGRstart)
 		{
 			FSM_TRANSITION( START, color=blue, label='req\nVGR' );
 			reqVGRstart = false;
-		}*/
-		if (isColorSensorTriggered())
+		}
+		/*if (isColorSensorTriggered())
 		{
 			FSM_TRANSITION( START, color=blue, label='start' );
 		}
-		else if (reqVGRcalib)
+		else*/
+		if (reqVGRcalib)
 		{
 			FSM_TRANSITION( CALIB_SLD, color=orange, label='req\ncalib'  );
 			reqVGRcalib = false;

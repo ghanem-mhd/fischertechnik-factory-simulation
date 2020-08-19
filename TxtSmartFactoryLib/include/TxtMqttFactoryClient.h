@@ -169,7 +169,9 @@ public:
 #define TOPIC_LOCAL_SLD_ACK      "fl/sld/ack"
 
 //custom
-#define TOPIC_CUSTOM_VGR_DO    "fl/vgr/do/custom"
+#define TOPIC_CUSTOM_HBW_DO    "fl/hbw/do"
+#define TOPIC_CUSTOM_MPO_DO    "fl/mpo/do"
+#define TOPIC_CUSTOM_SLD_DO    "fl/sld/do"
 
 class TxtMqttFactoryClient {
 public:

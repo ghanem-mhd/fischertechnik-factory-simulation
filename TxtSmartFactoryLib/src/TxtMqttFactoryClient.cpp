@@ -180,7 +180,9 @@ void TxtMqttFactoryClient::disconnect(long int timeout) {
 			//remote
 			unsubTopic(TOPIC_OUTPUT_STATE_ACK, timeout);
 			//local
-			unsubTopic(TOPIC_LOCAL_VGR_DO, timeout);
+			//unsubTopic(TOPIC_LOCAL_VGR_DO, timeout);
+			//custom 
+			unsubTopic(TOPIC_CUSTOM_MPO_DO, timeout);
 		}
 		else if (clientname == "TxtFactoryHBW")
 		{
@@ -190,7 +192,7 @@ void TxtMqttFactoryClient::disconnect(long int timeout) {
 			//unsubTopic(TOPIC_LOCAL_VGR_DO, timeout);
 			unsubTopic(TOPIC_LOCAL_SSC_JOY, timeout);
 			// custom
-			unsubTopic(TOPIC_CUSTOM_VGR_DO, timeout);
+			unsubTopic(TOPIC_CUSTOM_HBW_DO, timeout);
 		}
 		else if (clientname == "TxtFactoryVGR")
 		{
@@ -212,6 +214,8 @@ void TxtMqttFactoryClient::disconnect(long int timeout) {
 			unsubTopic(TOPIC_LOCAL_SSC_JOY, timeout);
 			unsubTopic(TOPIC_LOCAL_MPO_ACK, timeout);
 			unsubTopic(TOPIC_LOCAL_VGR_DO, timeout);
+			//custom
+			unsubTopic(TOPIC_CUSTOM_SLD_DO, timeout);
 	}
 		else
 		{
@@ -285,7 +289,10 @@ bool TxtMqttFactoryClient::start_consume(long int timeout) {
 			//remote
 			subTopic(TOPIC_OUTPUT_STATE_ACK, timeout);
 			//local
-			subTopic(TOPIC_LOCAL_VGR_DO, timeout);
+			//subTopic(TOPIC_LOCAL_VGR_DO, timeout);
+			//Custom
+			subTopic(TOPIC_CUSTOM_MPO_DO, timeout);
+
 		}
 		else if (clientname == "TxtFactoryHBW")
 		{
@@ -294,7 +301,7 @@ bool TxtMqttFactoryClient::start_consume(long int timeout) {
 			//local
 			//subTopic(TOPIC_LOCAL_VGR_DO, timeout);
 			subTopic(TOPIC_LOCAL_SSC_JOY, timeout);
-			subTopic(TOPIC_CUSTOM_VGR_DO, timeout);
+			subTopic(TOPIC_CUSTOM_HBW_DO, timeout);
 		}
 		else if (clientname == "TxtFactoryVGR")
 		{
@@ -316,6 +323,8 @@ bool TxtMqttFactoryClient::start_consume(long int timeout) {
 			subTopic(TOPIC_LOCAL_SSC_JOY, timeout);
 			subTopic(TOPIC_LOCAL_MPO_ACK, timeout);
 			subTopic(TOPIC_LOCAL_VGR_DO, timeout);
+			// custom
+			subTopic(TOPIC_CUSTOM_SLD_DO, timeout);
 		}
 		else
 		{
@@ -887,6 +896,8 @@ void TxtMqttFactoryClient::publishMPO_Ack(TxtMpoAckCode_t code, long timeout)
 	try {
 		js_ack["ts"] = sts;
 		js_ack["code"] = (int)code;
+		js_ack["taskID"] = (int) currentTaskID;
+		
 		sout_ack << js_ack;
 		try {
 			SPDLOG_LOGGER_DEBUG(spdlog::get("console"), "topic: {}", TOPIC_LOCAL_MPO_ACK);
@@ -1016,6 +1027,7 @@ void TxtMqttFactoryClient::publishSLD_Ack(TxtSldAckCode_t code, TxtWPType_t type
 	try {
 		js_ack["ts"] = sts;
 		js_ack["code"] = (int)code;
+		js_ack["taskID"] = (int) currentTaskID;
 
 		js_ack["type"] = toString(type);
 		js_ack["colorValue"] = value;

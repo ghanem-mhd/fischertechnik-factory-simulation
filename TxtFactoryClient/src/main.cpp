@@ -106,7 +106,7 @@ class callback : public virtual mqtt::callback
 				std::cout << "Error: " << exc.what() << std::endl;
 			}
 			SPDLOG_LOGGER_DEBUG(spdlog::get("console"), "OK.", 0);
-		} else if (msg->get_topic() == TOPIC_LOCAL_VGR_DO) {
+		} else if (msg->get_topic() == TOPIC_CUSTOM_MPO_DO) {
 			SPDLOG_LOGGER_DEBUG(spdlog::get("console"), "DETECTED vgr do:{}", msg->get_topic());
 			std::stringstream ssin(msg->to_string());
 			Json::Value root;
@@ -115,6 +115,9 @@ class callback : public virtual mqtt::callback
 				std::string sts = root["ts"].asString();
 				ft::TxtVgrDoCode_t code = (ft::TxtVgrDoCode_t)root["code"].asInt();
 				SPDLOG_LOGGER_DEBUG(spdlog::get("console"), "  ts:{} code:{}", sts, (int)code);
+
+				int taskID = root["taskID"].asInt();
+				pcli->setTaskID(taskID);
 
 				if (ft::trycheckTimestampTTL(sts))
 				{
@@ -232,19 +235,24 @@ class callback : public virtual mqtt::callback
 				std::cout << "Error: " << exc.what() << std::endl;
 			}
 			SPDLOG_LOGGER_DEBUG(spdlog::get("console"), "OK.", 0);
-		} else if (msg->get_topic() == TOPIC_CUSTOM_VGR_DO) {
-			SPDLOG_LOGGER_DEBUG(spdlog::get("console"), "DETECTED vgr do:{}", msg->get_topic());
+		} else if (msg->get_topic() == TOPIC_CUSTOM_HBW_DO) {
+			
+			spdlog::get("file_logger")->info("DETECTED hbw do:{}", msg->get_topic());
+
 			std::stringstream ssin(msg->to_string());
 			Json::Value root;
 			try {
 				ssin >> root;
 				std::string sts = root["ts"].asString();
-				int taskID = root["taskID"].asInt();
 
+				int taskID = root["taskID"].asInt();
 				pcli->setTaskID(taskID);
 
+				spdlog::get("file_logger")->info("taskID:{}", (int)taskID);
+
 				ft::TxtVgrDoCode_t code = (ft::TxtVgrDoCode_t)root["code"].asInt();
-				SPDLOG_LOGGER_DEBUG(spdlog::get("console"), "  ts:{} code:{}", sts, (int)code);
+
+				spdlog::get("file_logger")->info("ts:{} code:{}", sts, (int)code);
 
 				if (ft::trycheckTimestampTTL(sts))
 				{
@@ -301,6 +309,7 @@ class callback : public virtual mqtt::callback
 				}
 			} catch (const Json::RuntimeError& exc) {
 				std::cout << "Error: " << exc.what() << std::endl;
+				spdlog::get("file_logger")->error("Error: {}", exc.what());
 			}
 			SPDLOG_LOGGER_DEBUG(spdlog::get("console"), "OK.", 0);
 		} else {
@@ -622,7 +631,7 @@ class callback : public virtual mqtt::callback
 				std::cout << "Error: " << exc.what() << std::endl;
 			}
 			SPDLOG_LOGGER_DEBUG(spdlog::get("console"), "OK.", 0);
-		} else if (msg->get_topic() == TOPIC_LOCAL_VGR_DO) {
+		} else if (msg->get_topic() == TOPIC_CUSTOM_SLD_DO) {
 			SPDLOG_LOGGER_DEBUG(spdlog::get("console"), "DETECTED vgr do:{}", msg->get_topic());
 			std::stringstream ssin(msg->to_string());
 			Json::Value root;
@@ -631,6 +640,10 @@ class callback : public virtual mqtt::callback
 				std::string sts = root["ts"].asString();
 				ft::TxtVgrDoCode_t code = (ft::TxtVgrDoCode_t)root["code"].asInt();
 				SPDLOG_LOGGER_DEBUG(spdlog::get("console"), "  ts:{} code:{}", sts, (int)code);
+
+				int taskID = root["taskID"].asInt();
+				pcli->setTaskID(taskID);
+
 				if (ft::trycheckTimestampTTL(sts))
 				{
 					switch(code)
