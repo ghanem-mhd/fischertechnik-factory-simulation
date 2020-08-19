@@ -236,23 +236,18 @@ class callback : public virtual mqtt::callback
 			}
 			SPDLOG_LOGGER_DEBUG(spdlog::get("console"), "OK.", 0);
 		} else if (msg->get_topic() == TOPIC_CUSTOM_HBW_DO) {
-			
-			spdlog::get("file_logger")->info("DETECTED hbw do:{}", msg->get_topic());
-
+			SPDLOG_LOGGER_DEBUG(spdlog::get("console"), "DETECTED vgr do:{}", msg->get_topic());
 			std::stringstream ssin(msg->to_string());
 			Json::Value root;
 			try {
 				ssin >> root;
 				std::string sts = root["ts"].asString();
-
 				int taskID = root["taskID"].asInt();
+
 				pcli->setTaskID(taskID);
 
-				spdlog::get("file_logger")->info("taskID:{}", (int)taskID);
-
 				ft::TxtVgrDoCode_t code = (ft::TxtVgrDoCode_t)root["code"].asInt();
-
-				spdlog::get("file_logger")->info("ts:{} code:{}", sts, (int)code);
+				SPDLOG_LOGGER_DEBUG(spdlog::get("console"), "  ts:{} code:{}", sts, (int)code);
 
 				if (ft::trycheckTimestampTTL(sts))
 				{
