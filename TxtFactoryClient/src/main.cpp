@@ -242,8 +242,8 @@ class callback : public virtual mqtt::callback
 			try {
 				ssin >> root;
 				std::string sts = root["ts"].asString();
+				
 				int taskID = root["taskID"].asInt();
-
 				pcli->setTaskID(taskID);
 
 				ft::TxtVgrDoCode_t code = (ft::TxtVgrDoCode_t)root["code"].asInt();
@@ -304,7 +304,6 @@ class callback : public virtual mqtt::callback
 				}
 			} catch (const Json::RuntimeError& exc) {
 				std::cout << "Error: " << exc.what() << std::endl;
-				spdlog::get("file_logger")->error("Error: {}", exc.what());
 			}
 			SPDLOG_LOGGER_DEBUG(spdlog::get("console"), "OK.", 0);
 		} else {
