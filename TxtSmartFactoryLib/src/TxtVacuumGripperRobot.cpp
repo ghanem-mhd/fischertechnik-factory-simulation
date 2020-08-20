@@ -29,7 +29,7 @@ TxtVacuumGripperRobot::TxtVacuumGripperRobot(TxtTransfer* pT, ft::TxtMqttFactory
 	reqHBWstored(false), reqHBWfetched(false),
 	reqHBWcalib_nav(false), reqHBWcalib_end(false), reqSLDcalib_end(false), reqWP_HBW(0),
 	reqSLDsorted(false), reqWP_SLD(),
-	obs_vgr(0), obs_nfc(0)
+	obs_vgr(0), obs_nfc(0), reqStartDelivery(false)
 {
 	SPDLOG_LOGGER_TRACE(spdlog::get("console"), "TxtVacuumGripperRobot",0);
 	if (!calibData.existCalibFilename()) calibData.saveDefault();

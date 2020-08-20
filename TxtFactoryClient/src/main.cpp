@@ -106,7 +106,7 @@ class callback : public virtual mqtt::callback
 				std::cout << "Error: " << exc.what() << std::endl;
 			}
 			SPDLOG_LOGGER_DEBUG(spdlog::get("console"), "OK.", 0);
-		} else if (msg->get_topic() == TOPIC_CUSTOM_MPO_DO) {
+		} else if (msg->get_topic() == TOPIC_LOCAL_VGR_DO) {
 			SPDLOG_LOGGER_DEBUG(spdlog::get("console"), "DETECTED vgr do:{}", msg->get_topic());
 			std::stringstream ssin(msg->to_string());
 			Json::Value root;
@@ -114,6 +114,31 @@ class callback : public virtual mqtt::callback
 				ssin >> root;
 				std::string sts = root["ts"].asString();
 				ft::TxtVgrDoCode_t code = (ft::TxtVgrDoCode_t)root["code"].asInt();
+				SPDLOG_LOGGER_DEBUG(spdlog::get("console"), "  ts:{} code:{}", sts, (int)code);
+
+				if (ft::trycheckTimestampTTL(sts))
+				{
+					switch(code)
+					{
+					case ft::VGR_EXIT:
+						mpo_.requestExit("VGR");
+						break;
+					default:
+						break;
+					}
+				}
+			} catch (const Json::RuntimeError& exc) {
+				std::cout << "Error: " << exc.what() << std::endl;
+			}
+			SPDLOG_LOGGER_DEBUG(spdlog::get("console"), "OK.", 0);
+		} else if (msg->get_topic() == TOPIC_CUSTOM_MPO_DO) {
+			SPDLOG_LOGGER_DEBUG(spdlog::get("console"), "DETECTED vgr do:{}", msg->get_topic());
+			std::stringstream ssin(msg->to_string());
+			Json::Value root;
+			try {
+				ssin >> root;
+				std::string sts = root["ts"].asString();
+				ft::TxtMpoDoCode_t code = (ft::TxtMpoDoCode_t)root["code"].asInt();
 				SPDLOG_LOGGER_DEBUG(spdlog::get("console"), "  ts:{} code:{}", sts, (int)code);
 
 				int taskID = root["taskID"].asInt();
@@ -147,10 +172,7 @@ class callback : public virtual mqtt::callback
 
 					switch(code)
 					{
-					case ft::VGR_EXIT:
-						mpo_.requestExit("VGR");
-						break;
-					case ft::VGR_MPO_PRODUCE:
+					case ft::MPO_PRODUCE:
 						mpo_.requestVGRproduce(wp);
 						break;
 					default:
@@ -161,35 +183,7 @@ class callback : public virtual mqtt::callback
 				std::cout << "Error: " << exc.what() << std::endl;
 			}
 			SPDLOG_LOGGER_DEBUG(spdlog::get("console"), "OK.", 0);
-		} else if (msg->get_topic() == TOPIC_LOCAL_SLD_ACK) {
-			SPDLOG_LOGGER_DEBUG(spdlog::get("console"), "DETECTED SLD ack:{}", msg->get_topic());
-			std::stringstream ssin(msg->to_string());
-			Json::Value root;
-			try {
-				ssin >> root;
-				std::string sts = root["ts"].asString();
-				ft::TxtSldAckCode_t code = (ft::TxtSldAckCode_t)root["code"].asInt();
-				SPDLOG_LOGGER_DEBUG(spdlog::get("console"), "  ts:{} code:{}", sts, (int)code);
-
-				if (ft::trycheckTimestampTTL(sts))
-				{
-					switch (code)
-					{
-					case ft::SLD_EXIT:
-						mpo_.requestExit("SLD");
-						break;
-					case ft::SLD_STARTED:
-						mpo_.requestSLDstarted();
-						break;
-					default:
-						break;
-					}
-				}
-			} catch (const Json::RuntimeError& exc) {
-				std::cout << "Error: " << exc.what() << std::endl;
-			}
-			SPDLOG_LOGGER_DEBUG(spdlog::get("console"), "OK.", 0);
-		} else {
+		}  else {
 			std::cout << "Unknown topic: " << msg->get_topic() << std::endl;
 			spdlog::get("file_logger")->error("Unknown topic: {}",msg->get_topic());
 			exit(1);
@@ -235,18 +229,49 @@ class callback : public virtual mqtt::callback
 				std::cout << "Error: " << exc.what() << std::endl;
 			}
 			SPDLOG_LOGGER_DEBUG(spdlog::get("console"), "OK.", 0);
-		} else if (msg->get_topic() == TOPIC_CUSTOM_HBW_DO) {
+		} else if (msg->get_topic() == TOPIC_LOCAL_VGR_DO) {
 			SPDLOG_LOGGER_DEBUG(spdlog::get("console"), "DETECTED vgr do:{}", msg->get_topic());
 			std::stringstream ssin(msg->to_string());
 			Json::Value root;
 			try {
 				ssin >> root;
 				std::string sts = root["ts"].asString();
-				
+				ft::TxtVgrDoCode_t code = (ft::TxtVgrDoCode_t)root["code"].asInt();
+				SPDLOG_LOGGER_DEBUG(spdlog::get("console"), "  ts:{} code:{}", sts, (int)code);
+
+				if (ft::trycheckTimestampTTL(sts))
+				{
+					switch(code)
+					{
+					case ft::VGR_EXIT:
+						hbw_.requestExit("VGR");
+						break;
+					case ft::VGR_HBW_CALIB:
+						hbw_.requestVGRcalib();
+						break;
+					case ft::VGR_HBW_RESETSTORAGE:
+						hbw_.requestVGRresetStorage();
+						break;
+					default:
+						break;
+					}
+				}
+			} catch (const Json::RuntimeError& exc) {
+				std::cout << "Error: " << exc.what() << std::endl;
+			}
+			SPDLOG_LOGGER_DEBUG(spdlog::get("console"), "OK.", 0);
+		} else if (msg->get_topic() == TOPIC_CUSTOM_HBW_DO) {
+			SPDLOG_LOGGER_DEBUG(spdlog::get("console"), "DETECTED hbw do:{}", msg->get_topic());
+			std::stringstream ssin(msg->to_string());
+			Json::Value root;
+			try {
+				ssin >> root;
+				std::string sts = root["ts"].asString();
+
 				int taskID = root["taskID"].asInt();
 				pcli->setTaskID(taskID);
 
-				ft::TxtVgrDoCode_t code = (ft::TxtVgrDoCode_t)root["code"].asInt();
+				ft::TxtHbwDoCode_t code = (ft::TxtHbwDoCode_t)root["code"].asInt();
 				SPDLOG_LOGGER_DEBUG(spdlog::get("console"), "  ts:{} code:{}", sts, (int)code);
 
 				if (ft::trycheckTimestampTTL(sts))
@@ -277,26 +302,17 @@ class callback : public virtual mqtt::callback
 
 					switch(code)
 					{
-					case ft::VGR_EXIT:
-						hbw_.requestExit("VGR");
-						break;
-					case ft::VGR_HBW_FETCHCONTAINER:
+					case ft::HBW_FETCHCONTAINER:
 						hbw_.requestVGRfetchContainer(wp);
 						break;
-					case ft::VGR_HBW_STORE_WP:
+					case ft::HBW_STORE_WP:
 						hbw_.requestVGRstore(wp);
 						break;
-					case ft::VGR_HBW_FETCH_WP:
+					case ft::HBW_FETCH_WP:
 						hbw_.requestVGRfetch(wp);
 						break;
-					case ft::VGR_HBW_STORECONTAINER:
+					case ft::HBW_STORECONTAINER:
 						hbw_.requestVGRstoreContainer(wp);
-						break;
-					case ft::VGR_HBW_CALIB:
-						hbw_.requestVGRcalib();
-						break;
-					case ft::VGR_HBW_RESETSTORAGE:
-						hbw_.requestVGRresetStorage();
 						break;
 					default:
 						break;
@@ -414,37 +430,10 @@ class callback : public virtual mqtt::callback
 
 				if (ft::trycheckTimestampTTL(sts))
 				{
-					ft::TxtWorkpiece* wp = NULL;
-					if (root["workpiece"] != Json::Value::null) {
-						wp = new ft::TxtWorkpiece();
-						wp->tag_uid = root["workpiece"]["id"].asString();
-						std::string stype = root["workpiece"]["type"].asString();
-						if (stype == "WHITE") {
-							wp->type = ft::WP_TYPE_WHITE;
-						} else if(stype == "RED") {
-							wp->type = ft::WP_TYPE_RED;
-						} else if (stype == "BLUE") {
-							wp->type = ft::WP_TYPE_BLUE;
-						} else {
-							wp->type = ft::WP_TYPE_NONE;
-						}
-						std::string sstate = root["workpiece"]["state"].asString();
-						if (sstate == "RAW") {
-							wp->state = ft::WP_STATE_RAW;
-						} else if(sstate == "PROCESSED") {
-							wp->state = ft::WP_STATE_PROCESSED;
-						} else if (sstate == "REJECTED") {
-							wp->state = ft::WP_STATE_REJECTED;
-						}
-					}
-
 					switch (code)
 					{
 					case ft::MPO_EXIT:
 						vgr_.requestExit("MPO");
-						break;
-					case ft::MPO_STARTED:
-						vgr_.requestMPOstarted(wp);
 						break;
 					default:
 						break;
@@ -467,38 +456,10 @@ class callback : public virtual mqtt::callback
 					SPDLOG_LOGGER_DEBUG(spdlog::get("console"), "  ts:{} code:{}", sts, (int)code);
 
 					ft::TxtWorkpiece* wp = NULL;
-					if (root["workpiece"] != Json::Value::null) {
-						wp = new ft::TxtWorkpiece();
-						wp->tag_uid = root["workpiece"]["id"].asString();
-						std::string stype = root["workpiece"]["type"].asString();
-						if (stype == "WHITE") {
-							wp->type = ft::WP_TYPE_WHITE;
-						} else if(stype == "RED") {
-							wp->type = ft::WP_TYPE_RED;
-						} else if (stype == "BLUE") {
-							wp->type = ft::WP_TYPE_BLUE;
-						} else {
-							wp->type = ft::WP_TYPE_NONE;
-						}
-						std::string sstate = root["workpiece"]["state"].asString();
-						if (sstate == "RAW") {
-							wp->state = ft::WP_STATE_RAW;
-						} else if(sstate == "PROCESSED") {
-							wp->state = ft::WP_STATE_PROCESSED;
-						} else if (sstate == "REJECTED") {
-							wp->state = ft::WP_STATE_REJECTED;
-						}
-					}
 					switch (code)
 					{
 					case ft::HBW_EXIT:
 						vgr_.requestExit("HBW");
-						break;
-					case ft::HBW_STORED:
-						vgr_.requestHBWstored(wp);
-						break;
-					case ft::HBW_FETCHED:
-						vgr_.requestHBWfetched(wp);
 						break;
 					case ft::HBW_CALIB_NAV:
 						vgr_.requestHBWcalib_nav();
@@ -526,27 +487,86 @@ class callback : public virtual mqtt::callback
 					ft::TxtSldAckCode_t code = (ft::TxtSldAckCode_t)root["code"].asInt();
 					SPDLOG_LOGGER_DEBUG(spdlog::get("console"), "  ts:{} code:{}", sts, (int)code);
 
-					std::string stype = root["type"].asString();
-					SPDLOG_LOGGER_DEBUG(spdlog::get("console"), "  type:{}", stype);
-					ft::TxtWPType_t type = ft::WP_TYPE_NONE;
-					if (stype == "WHITE") {
-						type = ft::WP_TYPE_WHITE;
-					} else if(stype == "RED") {
-						type = ft::WP_TYPE_RED;
-					} else if (stype == "BLUE") {
-						type = ft::WP_TYPE_BLUE;
-					}
 					switch (code)
 					{
 					case ft::SLD_EXIT:
 						vgr_.requestExit("SLD");
 						break;
-					case ft::SLD_SORTED:
-						vgr_.requestSLDsorted(type);
-						break;
 					case ft::SLD_CALIB_END:
 						vgr_.requestSLDcalib_end();
 						break;
+					default:
+						break;
+					}
+				}
+			} catch (const Json::RuntimeError& exc) {
+				std::cout << "Error: " << exc.what() << std::endl;
+			}
+			SPDLOG_LOGGER_DEBUG(spdlog::get("console"), "OK.", 0);
+		} else if (msg->get_topic() == TOPIC_CUSTOM_VGR_DO) {
+			SPDLOG_LOGGER_DEBUG(spdlog::get("console"), "DETECTED VGR DO DELIVERY:{}", msg->get_topic());
+			std::stringstream ssin(msg->to_string());
+			Json::Value root;
+			try {
+				ssin >> root;
+
+				int taskID = root["taskID"].asInt();
+				pcli->setTaskID(taskID);
+
+				std::string sts = root["ts"].asString();
+				if (ft::trycheckTimestampTTL(sts))
+				{
+					ft::TxtVgrCustomDoCode_t code = (ft::TxtVgrCustomDoCode_t)root["code"].asInt();
+					SPDLOG_LOGGER_DEBUG(spdlog::get("console"), "  ts:{} code:{}", sts, (int)code);
+
+					ft::TxtWorkpiece* wp = NULL;
+					if (root["workpiece"] != Json::Value::null) {
+						wp = new ft::TxtWorkpiece();
+						wp->tag_uid = root["workpiece"]["id"].asString();
+						std::string stype = root["workpiece"]["type"].asString();
+						if (stype == "WHITE") {
+							wp->type = ft::WP_TYPE_WHITE;
+						} else if(stype == "RED") {
+							wp->type = ft::WP_TYPE_RED;
+						} else if (stype == "BLUE") {
+							wp->type = ft::WP_TYPE_BLUE;
+						} else {
+							wp->type = ft::WP_TYPE_NONE;
+						}
+						std::string sstate = root["workpiece"]["state"].asString();
+						if (sstate == "RAW") {
+							wp->state = ft::WP_STATE_RAW;
+						} else if(sstate == "PROCESSED") {
+							wp->state = ft::WP_STATE_PROCESSED;
+						} else if (sstate == "REJECTED") {
+							wp->state = ft::WP_STATE_REJECTED;
+						}
+					}
+
+					switch (code)
+					{
+					case ft::VGR_GET_INFO:
+						vgr_.requestStartDelivery();
+						break;
+					case ft::VGR_START_HBW:
+						vgr_.requestHBWfetched(wp);
+						break;
+					case ft::VGR_START_MPO:
+						vgr_.requestMPOstarted(wp);
+						break;
+					case ft::VGR_START_SLD:
+						std::string stype = root["type"].asString();
+						SPDLOG_LOGGER_DEBUG(spdlog::get("console"), "  type:{}", stype);
+						ft::TxtWPType_t type = ft::WP_TYPE_NONE;
+						if (stype == "WHITE") {
+							type = ft::WP_TYPE_WHITE;
+						} else if(stype == "RED") {
+							type = ft::WP_TYPE_RED;
+						} else if (stype == "BLUE") {
+							type = ft::WP_TYPE_BLUE;
+						}
+						vgr_.requestSLDsorted(type);
+					break;
 					default:
 						break;
 					}
@@ -625,7 +645,7 @@ class callback : public virtual mqtt::callback
 				std::cout << "Error: " << exc.what() << std::endl;
 			}
 			SPDLOG_LOGGER_DEBUG(spdlog::get("console"), "OK.", 0);
-		} else if (msg->get_topic() == TOPIC_CUSTOM_SLD_DO) {
+		} else if (msg->get_topic() == TOPIC_LOCAL_VGR_DO) {
 			SPDLOG_LOGGER_DEBUG(spdlog::get("console"), "DETECTED vgr do:{}", msg->get_topic());
 			std::stringstream ssin(msg->to_string());
 			Json::Value root;
@@ -633,6 +653,33 @@ class callback : public virtual mqtt::callback
 				ssin >> root;
 				std::string sts = root["ts"].asString();
 				ft::TxtVgrDoCode_t code = (ft::TxtVgrDoCode_t)root["code"].asInt();
+				SPDLOG_LOGGER_DEBUG(spdlog::get("console"), "  ts:{} code:{}", sts, (int)code);
+				if (ft::trycheckTimestampTTL(sts))
+				{
+					switch(code)
+					{
+					case ft::VGR_EXIT:
+						sld_.requestExit("VGR");
+						break;
+					case ft::VGR_SLD_CALIB:
+						sld_.requestVGRcalib();
+						break;
+					default:
+						break;
+					}
+				}
+			} catch (const Json::RuntimeError& exc) {
+				std::cout << "Error: " << exc.what() << std::endl;
+			}
+			SPDLOG_LOGGER_DEBUG(spdlog::get("console"), "OK.", 0);
+		} else if (msg->get_topic() == TOPIC_CUSTOM_SLD_DO) {
+			SPDLOG_LOGGER_DEBUG(spdlog::get("console"), "DETECTED sld do:{}", msg->get_topic());
+			std::stringstream ssin(msg->to_string());
+			Json::Value root;
+			try {
+				ssin >> root;
+				std::string sts = root["ts"].asString();
+				ft::TxtSldDoCode_t code = (ft::TxtSldDoCode_t)root["code"].asInt();
 				SPDLOG_LOGGER_DEBUG(spdlog::get("console"), "  ts:{} code:{}", sts, (int)code);
 
 				int taskID = root["taskID"].asInt();
@@ -642,14 +689,8 @@ class callback : public virtual mqtt::callback
 				{
 					switch(code)
 					{
-					case ft::VGR_EXIT:
-						sld_.requestExit("VGR");
-						break;
-					case ft::VGR_SLD_START:
+					case ft::SLD_START:
 						sld_.requestVGRstart();
-						break;
-					case ft::VGR_SLD_CALIB:
-						sld_.requestVGRcalib();
 						break;
 					default:
 						break;

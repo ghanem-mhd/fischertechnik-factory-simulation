@@ -273,6 +273,10 @@ public:
 		reqWP_SLD.state = ft::WP_STATE_PROCESSED;
 		reqSLDsorted = true;
 	}
+	void requestStartDelivery() {
+		SPDLOG_LOGGER_TRACE(spdlog::get("console"),"requestStartDelivery {}",(int)type);
+		reqStartDelivery = true;
+	}
 
 	void stop();
 	void moveRef();
@@ -371,6 +375,9 @@ protected:
 	TxtWorkpiece* reqWP_HBW;
 	bool reqSLDsorted;
 	TxtWorkpiece reqWP_SLD;
+
+	// custom
+	bool reqStartDelivery;
 
 	TxtFactoryProcessStorage proStorage;
 

@@ -189,9 +189,10 @@ void TxtVacuumGripperRobot::fsmStep()
 			FSM_TRANSITION( FETCH_WP_VGR, color=blue, label='req order' );
 			reqOrder = false;
 		}
-		else if (!dps.is_DIN())
+		else if (reqStartDelivery)
 		{
 			FSM_TRANSITION( START_DELIVERY, color=blue, label='dsi' );
+			reqStartDelivery = false;
 		}
 		/*else if (joyData.aY2 < -500)
 		{
@@ -287,7 +288,7 @@ void TxtVacuumGripperRobot::fsmStep()
 			reqWP_MPO = reqWP_HBW;
 
 			assert(mqttclient);
-			mqttclient->publishVGR_Do(VGR_HBW_STORECONTAINER, reqWP_MPO, TIMEOUT_MS_PUBLISH);
+			mqttclient->publishVGR_Ack(VGR_HBW_PICKED, reqWP_MPO, TIMEOUT_MS_PUBLISH);
 
 			assert(reqWP_MPO);
 			proStorage.setTimestampNow(reqWP_MPO->tag_uid, OUTSOURCING_INDEX);
@@ -318,7 +319,7 @@ void TxtVacuumGripperRobot::fsmStep()
 		std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
 		assert(mqttclient);
-		mqttclient->publishVGR_Do(VGR_MPO_PRODUCE, reqWP_MPO, TIMEOUT_MS_PUBLISH);
+		mqttclient->publishVGR_Ack(VGR_MPO_FINISHED, reqWP_MPO, TIMEOUT_MS_PUBLISH);
 		proStorage.setTimestampNow(reqWP_MPO->tag_uid, PROCESSING_OVEN_INDEX);
 
 		moveRef();
@@ -497,6 +498,7 @@ void TxtVacuumGripperRobot::fsmStep()
 			ord_state.state = SHIPPED;
 			assert(mqttclient);
 			mqttclient->publishStateOrder(ord_state, TIMEOUT_MS_PUBLISH);
+			mqttclient->publishVGR_Ack(VGR_SLD_FINISH, 0, TIMEOUT_MS_PUBLISH);
 			std::this_thread::sleep_for(std::chrono::milliseconds(2000));
 
 			FSM_TRANSITION( MOVE_PICKUP, color=blue, label='delivered' );
@@ -529,7 +531,7 @@ void TxtVacuumGripperRobot::fsmStep()
 		printState(STORE_WP_VGR);
 
 		assert(mqttclient);
-		mqttclient->publishVGR_Do(VGR_HBW_FETCHCONTAINER, reqWP_HBW, TIMEOUT_MS_PUBLISH);
+		mqttclient->publishVGR_Ack(VGR_INFO_FINISHED, reqWP_HBW, TIMEOUT_MS_PUBLISH);
 
 		dps.setActiveDSI(false);
 		if (dps.getLastColor() == WP_TYPE_NONE)
@@ -560,7 +562,7 @@ void TxtVacuumGripperRobot::fsmStep()
 			proStorage.setTimestampNow(reqWP_HBW->tag_uid, WAREHOUSING_INDEX);
 
 			assert(mqttclient);
-			mqttclient->publishVGR_Do(VGR_HBW_STORE_WP, reqWP_HBW, TIMEOUT_MS_PUBLISH);
+			mqttclient->publishVGR_Ack(VGR_HBW_DROPPED, reqWP_HBW, TIMEOUT_MS_PUBLISH);
 
 			moveRef();
 			FSM_TRANSITION( IDLE, color=green, label='fetched' );

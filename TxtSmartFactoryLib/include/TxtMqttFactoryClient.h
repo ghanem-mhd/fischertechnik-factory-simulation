@@ -47,17 +47,33 @@ typedef enum
 
 typedef enum
 {
+	MPO_PRODUCE=7
+} TxtMpoDoCode_t;
+
+typedef enum
+{
+	VGR_INFO_FINISHED = 1,
+	VGR_HBW_DROPPED   = 2,
+	VGR_HBW_PICKED    = 3,
+	VGR_MPO_FINISHED  = 4,
+	VGR_SLD_FINISH 	  = 5
+} TxtVgrAckCode_t;
+
+typedef enum
+{
 	VGR_EXIT=0,
-	VGR_HBW_FETCHCONTAINER=1,
-	VGR_HBW_STORE_WP=2,
-	VGR_HBW_FETCH_WP=3,
-	VGR_HBW_STORECONTAINER=4,
 	VGR_HBW_RESETSTORAGE=5,
 	VGR_HBW_CALIB=6,
-	VGR_MPO_PRODUCE=7,
-	VGR_SLD_START=8,
 	VGR_SLD_CALIB=9
 } TxtVgrDoCode_t;
+
+typedef enum
+{
+	VGR_GET_INFO = 1,
+	VGR_START_HBW = 2,
+	VGR_START_MPO = 3,
+	VGR_START_SLD = 4
+} TxtVgrCustomDoCode_t;
 
 typedef enum
 {
@@ -70,12 +86,24 @@ typedef enum
 
 typedef enum
 {
+	HBW_FETCHCONTAINER=1,
+	HBW_STORE_WP=2,
+	HBW_FETCH_WP=3,
+	HBW_STORECONTAINER=4
+} TxtHbwDoCode_t;
+
+typedef enum
+{
 	SLD_EXIT=0,
 	SLD_STARTED=1,
 	SLD_SORTED=2,
 	SLD_CALIB_END=3
 } TxtSldAckCode_t;
 
+typedef enum
+{
+	SLD_START=8,
+} TxtSldDoCode_t;
 
 class action_listener_subscribe : public virtual mqtt::iaction_listener
 {
@@ -167,11 +195,12 @@ public:
 #define TOPIC_LOCAL_VGR_DO       "fl/vgr/do"
 #define TOPIC_LOCAL_HBW_ACK      "fl/hbw/ack"
 #define TOPIC_LOCAL_SLD_ACK      "fl/sld/ack"
-
 //custom
-#define TOPIC_CUSTOM_HBW_DO    "fl/hbw/do"
-#define TOPIC_CUSTOM_MPO_DO    "fl/mpo/do"
-#define TOPIC_CUSTOM_SLD_DO    "fl/sld/do"
+#define TOPIC_CUSTOM_VGR_DO      "fl/vgr/do2"
+#define TOPIC_CUSTOM_VGR_ACK     "fl/vgr/ack"
+#define TOPIC_CUSTOM_HBW_DO      "fl/hbw/do"
+#define TOPIC_CUSTOM_MPO_DO      "fl/mpo/do"
+#define TOPIC_CUSTOM_SLD_DO      "fl/sld/do"
 
 class TxtMqttFactoryClient {
 public:
@@ -216,6 +245,7 @@ public:
 	void publishVGR_Do(TxtVgrDoCode_t code, TxtWorkpiece* wp, long timeout);
 	void publishHBW_Ack(TxtHbwAckCode_t code, TxtWorkpiece* wp, long timeout);
 	void publishSLD_Ack(TxtSldAckCode_t code, TxtWPType_t type, int value, long timeout);
+	void publishVGR_Ack(TxtVgrAckCode_t code, TxtWorkpiece* wp, long timeout);
 
 	int currentTaskID = 0;
 

@@ -180,8 +180,8 @@ void TxtMqttFactoryClient::disconnect(long int timeout) {
 			//remote
 			unsubTopic(TOPIC_OUTPUT_STATE_ACK, timeout);
 			//local
-			//unsubTopic(TOPIC_LOCAL_VGR_DO, timeout);
-			//custom 
+			unsubTopic(TOPIC_LOCAL_VGR_DO, timeout);
+			//custom
 			unsubTopic(TOPIC_CUSTOM_MPO_DO, timeout);
 		}
 		else if (clientname == "TxtFactoryHBW")
@@ -189,7 +189,7 @@ void TxtMqttFactoryClient::disconnect(long int timeout) {
 			//remote
 			unsubTopic(TOPIC_OUTPUT_STATE_ACK, timeout);
 			//local
-			//unsubTopic(TOPIC_LOCAL_VGR_DO, timeout);
+			unsubTopic(TOPIC_LOCAL_VGR_DO, timeout);
 			unsubTopic(TOPIC_LOCAL_SSC_JOY, timeout);
 			// custom
 			unsubTopic(TOPIC_CUSTOM_HBW_DO, timeout);
@@ -205,6 +205,8 @@ void TxtMqttFactoryClient::disconnect(long int timeout) {
 			unsubTopic(TOPIC_LOCAL_MPO_ACK, timeout);
 			unsubTopic(TOPIC_LOCAL_HBW_ACK, timeout);
 			unsubTopic(TOPIC_LOCAL_SLD_ACK, timeout);
+			//custom
+			unsubTopic(TOPIC_CUSTOM_VGR_DO, timeout);
 		}
 		else if (clientname == "TxtFactorySLD")
 		{
@@ -289,7 +291,7 @@ bool TxtMqttFactoryClient::start_consume(long int timeout) {
 			//remote
 			subTopic(TOPIC_OUTPUT_STATE_ACK, timeout);
 			//local
-			//subTopic(TOPIC_LOCAL_VGR_DO, timeout);
+			subTopic(TOPIC_LOCAL_VGR_DO, timeout);
 			//Custom
 			subTopic(TOPIC_CUSTOM_MPO_DO, timeout);
 
@@ -299,8 +301,9 @@ bool TxtMqttFactoryClient::start_consume(long int timeout) {
 			//remote
 			subTopic(TOPIC_OUTPUT_STATE_ACK, timeout);
 			//local
-			//subTopic(TOPIC_LOCAL_VGR_DO, timeout);
+			subTopic(TOPIC_LOCAL_VGR_DO, timeout);
 			subTopic(TOPIC_LOCAL_SSC_JOY, timeout);
+			//custom
 			subTopic(TOPIC_CUSTOM_HBW_DO, timeout);
 		}
 		else if (clientname == "TxtFactoryVGR")
@@ -314,6 +317,8 @@ bool TxtMqttFactoryClient::start_consume(long int timeout) {
 			subTopic(TOPIC_LOCAL_MPO_ACK, timeout);
 			subTopic(TOPIC_LOCAL_HBW_ACK, timeout);
 			subTopic(TOPIC_LOCAL_SLD_ACK, timeout);
+			//custom
+			subTopic(TOPIC_CUSTOM_VGR_DO, timeout);
 		}
 		else if (clientname == "TxtFactorySLD")
 		{
@@ -897,7 +902,7 @@ void TxtMqttFactoryClient::publishMPO_Ack(TxtMpoAckCode_t code, long timeout)
 		js_ack["ts"] = sts;
 		js_ack["code"] = (int)code;
 		js_ack["taskID"] = (int) currentTaskID;
-		
+
 		sout_ack << js_ack;
 		try {
 			SPDLOG_LOGGER_DEBUG(spdlog::get("console"), "topic: {}", TOPIC_LOCAL_MPO_ACK);
@@ -966,6 +971,53 @@ void TxtMqttFactoryClient::publishVGR_Do(TxtVgrDoCode_t code, TxtWorkpiece* wp, 
 	}
 	pthread_mutex_unlock(&m_mutex);
 	SPDLOG_LOGGER_DEBUG(spdlog::get("console"), "pthread_mutex_unlock publishVGR_Do",0);
+}
+
+void TxtMqttFactoryClient::publishVGR_Ack(TxtVgrAckCode_t code, TxtWorkpiece* wp, long timeout)
+{
+	SPDLOG_LOGGER_TRACE(spdlog::get("console"), "publishVGR_Ack code:{} timeout:{}", (int)code, timeout);
+	pthread_mutex_lock(&m_mutex);
+	SPDLOG_LOGGER_DEBUG(spdlog::get("console"), "pthread_mutex_lock publishVGR_Ack",0);
+	Json::Value js_ack;
+	std::ostringstream sout_ack;
+	char sts[25];
+	ft::getnowstr(sts);
+	try {
+		js_ack["ts"] = sts;
+		js_ack["code"] = (int)code;
+
+		if (wp)
+		{
+			Json::Value js_wp;
+	    	js_wp["id"] = wp->tag_uid;
+	    	js_wp["type"] = toString(wp->type);
+	    	js_wp["state"] = toString(wp->state);
+	    	js_ack["workpiece"] = js_wp;
+		} else {
+	    	js_ack["workpiece"] = Json::Value::null;
+		}
+
+		sout_ack << js_ack;
+		try {
+			SPDLOG_LOGGER_DEBUG(spdlog::get("console"), "topic: {}", TOPIC_CUSTOM_VGR_ACK);
+			auto msg_ack = mqtt::make_message(TOPIC_CUSTOM_VGR_ACK, sout_ack.str());
+			msg_ack->set_qos(iqos);
+			msg_ack->set_retained(bretained);
+			SPDLOG_LOGGER_DEBUG(spdlog::get("console"), "publish: {}", (int)code);
+			mqtt::token_ptr conntok = cli.publish(msg_ack, nullptr, aListPub);
+			bool r = conntok->wait_for(timeout);
+#ifdef FORCE_EXIT_ON_TIMEOUT
+			if (!r) exit(1);
+#endif
+		} catch (const mqtt::exception& exc) {
+			std::cout << "publishVGR_Ack: " << exc.what() << " "
+					<< getMQTTReasonCodeString(exc.get_reason_code()) << std::endl;
+		}
+	} catch (const Json::RuntimeError& exc) {
+		std::cout << "Error: " << exc.what() << std::endl;
+	}
+	pthread_mutex_unlock(&m_mutex);
+	SPDLOG_LOGGER_DEBUG(spdlog::get("console"), "pthread_mutex_unlock publishVGR_Ack",0);
 }
 
 void TxtMqttFactoryClient::publishHBW_Ack(TxtHbwAckCode_t code, TxtWorkpiece* wp, long timeout)
