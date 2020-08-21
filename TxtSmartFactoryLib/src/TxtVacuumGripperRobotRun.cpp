@@ -268,7 +268,7 @@ void TxtVacuumGripperRobot::fsmStep()
 
 		assert(mqttclient);
 		reqWP_order.printDebug();
-		mqttclient->publishVGR_Do(VGR_HBW_FETCH_WP, &reqWP_order, TIMEOUT_MS_PUBLISH);
+		mqttclient->publishVGR_Ack(VGR_ORDER_FINISHED, &reqWP_order, TIMEOUT_MS_PUBLISH);
 
 		setTarget("hbw");
 		moveFromHBW1();
@@ -498,7 +498,7 @@ void TxtVacuumGripperRobot::fsmStep()
 			ord_state.state = SHIPPED;
 			assert(mqttclient);
 			mqttclient->publishStateOrder(ord_state, TIMEOUT_MS_PUBLISH);
-			mqttclient->publishVGR_Ack(VGR_SLD_FINISH, 0, TIMEOUT_MS_PUBLISH);
+			mqttclient->publishVGR_Ack(VGR_SLD_FINISHED, 0, TIMEOUT_MS_PUBLISH);
 			std::this_thread::sleep_for(std::chrono::milliseconds(2000));
 
 			FSM_TRANSITION( MOVE_PICKUP, color=blue, label='delivered' );

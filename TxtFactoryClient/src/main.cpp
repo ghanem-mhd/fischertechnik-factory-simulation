@@ -523,12 +523,12 @@ class callback : public virtual mqtt::callback
 					if (root["workpiece"] != Json::Value::null) {
 						wp = new ft::TxtWorkpiece();
 						wp->tag_uid = root["workpiece"]["id"].asString();
-						std::string stype = root["workpiece"]["type"].asString();
-						if (stype == "WHITE") {
+						std::string stype0 = root["workpiece"]["type"].asString();
+						if (stype0 == "WHITE") {
 							wp->type = ft::WP_TYPE_WHITE;
-						} else if(stype == "RED") {
+						} else if(stype0 == "RED") {
 							wp->type = ft::WP_TYPE_RED;
-						} else if (stype == "BLUE") {
+						} else if (stype0 == "BLUE") {
 							wp->type = ft::WP_TYPE_BLUE;
 						} else {
 							wp->type = ft::WP_TYPE_NONE;
@@ -555,17 +555,31 @@ class callback : public virtual mqtt::callback
 						vgr_.requestMPOstarted(wp);
 						break;
 					case ft::VGR_START_SLD:
+						std::string stype1 = root["type"].asString();
+						SPDLOG_LOGGER_DEBUG(spdlog::get("console"), "  type:{}", stype1);
+						ft::TxtWPType_t type1 = ft::WP_TYPE_NONE;
+						if (stype1 == "WHITE") {
+							type1 = ft::WP_TYPE_WHITE;
+						} else if(stype1 == "RED") {
+							type1 = ft::WP_TYPE_RED;
+						} else if (stype1 == "BLUE") {
+							type1 = ft::WP_TYPE_BLUE;
+						}
+						vgr_.requestSLDsorted(type1);
+					break;
+					case ft::VGR_ORDER:
 						std::string stype = root["type"].asString();
 						SPDLOG_LOGGER_DEBUG(spdlog::get("console"), "  type:{}", stype);
-						ft::TxtWPType_t type = ft::WP_TYPE_NONE;
-						if (stype == "WHITE") {
-							type = ft::WP_TYPE_WHITE;
-						} else if(stype == "RED") {
-							type = ft::WP_TYPE_RED;
-						} else if (stype == "BLUE") {
-							type = ft::WP_TYPE_BLUE;
+						if (stype == "WHITE")
+						{
+							vgr_.requestOrder(ft::WP_TYPE_WHITE);
+						} else if(stype == "RED")
+						{
+							vgr_.requestOrder(ft::WP_TYPE_RED);
+						} else if (stype == "BLUE")
+						{
+							vgr_.requestOrder(ft::WP_TYPE_BLUE);
 						}
-						vgr_.requestSLDsorted(type);
 					break;
 					default:
 						break;

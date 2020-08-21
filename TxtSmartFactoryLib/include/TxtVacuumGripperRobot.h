@@ -274,7 +274,7 @@ public:
 		reqSLDsorted = true;
 	}
 	void requestStartDelivery() {
-		SPDLOG_LOGGER_TRACE(spdlog::get("console"),"requestStartDelivery {}",(int)type);
+		SPDLOG_LOGGER_TRACE(spdlog::get("console"),"requestStartDelivery");
 		reqStartDelivery = true;
 	}
 
