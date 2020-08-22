@@ -74,7 +74,7 @@ typedef enum
 	VGR_START_HBW = 2,
 	VGR_START_MPO = 3,
 	VGR_START_SLD = 4,
-	VGR_ORDER = 5
+	VGR_START_ORDER = 5
 } TxtVgrCustomDoCode_t;
 
 typedef enum

@@ -545,16 +545,19 @@ class callback : public virtual mqtt::callback
 
 					switch (code)
 					{
-					case ft::VGR_GET_INFO:
+					case ft::VGR_GET_INFO:{
 						vgr_.requestStartDelivery();
 						break;
-					case ft::VGR_START_HBW:
+					}
+					case ft::VGR_START_HBW:{
 						vgr_.requestHBWfetched(wp);
 						break;
-					case ft::VGR_START_MPO:
+					}
+					case ft::VGR_START_MPO:{
 						vgr_.requestMPOstarted(wp);
 						break;
-					case ft::VGR_START_SLD:
+					}
+					case ft::VGR_START_SLD:{
 						std::string stype1 = root["type"].asString();
 						SPDLOG_LOGGER_DEBUG(spdlog::get("console"), "  type:{}", stype1);
 						ft::TxtWPType_t type1 = ft::WP_TYPE_NONE;
@@ -566,8 +569,9 @@ class callback : public virtual mqtt::callback
 							type1 = ft::WP_TYPE_BLUE;
 						}
 						vgr_.requestSLDsorted(type1);
-					break;
-					case ft::VGR_ORDER:
+						break;
+					}
+					case ft::VGR_START_ORDER:{
 						std::string stype = root["type"].asString();
 						SPDLOG_LOGGER_DEBUG(spdlog::get("console"), "  type:{}", stype);
 						if (stype == "WHITE")
@@ -580,7 +584,8 @@ class callback : public virtual mqtt::callback
 						{
 							vgr_.requestOrder(ft::WP_TYPE_BLUE);
 						}
-					break;
+						break;
+					}
 					default:
 						break;
 					}

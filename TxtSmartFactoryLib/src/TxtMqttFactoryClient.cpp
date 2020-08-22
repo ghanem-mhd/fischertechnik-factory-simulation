@@ -985,6 +985,7 @@ void TxtMqttFactoryClient::publishVGR_Ack(TxtVgrAckCode_t code, TxtWorkpiece* wp
 	try {
 		js_ack["ts"] = sts;
 		js_ack["code"] = (int)code;
+		js_ack["taskID"] = (int) currentTaskID;
 
 		if (wp)
 		{
