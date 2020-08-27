@@ -157,6 +157,7 @@ public:
 		FSM_DECLARE_STATE_XE( CALIB_VGR, color=orange ),
 		FSM_DECLARE_STATE_XE( CALIB_VGR_NAV, color=orange ),
 		FSM_DECLARE_STATE_XE( CALIB_VGR_MOVE, color=orange ),
+		FSM_DECLARE_STATE_XE( MOVE_HBW2MPO, color=blue ),
 	};
 
 	inline const char * toString(State_t state)
@@ -188,6 +189,7 @@ public:
 		   _CASE_ITEM( CALIB_VGR )
 		   _CASE_ITEM( CALIB_VGR_NAV )
 		   _CASE_ITEM( CALIB_VGR_MOVE )
+		   _CASE_ITEM( MOVE_HBW2MPO )
 		   default: break;
 		}
 		return "[TxtVacuumGripperRobot::State_t] Unknown State";
@@ -228,6 +230,10 @@ public:
 	void requestNfcDelete() {
 		SPDLOG_LOGGER_TRACE(spdlog::get("console"),"requestNfcDelete",0);
 		reqNfcDelete= true;
+	}
+	void requestMoveFromHBWToMPO() {
+		SPDLOG_LOGGER_TRACE(spdlog::get("console"),"requestMoveFromHBWToMPO",0);
+		reqMoveHBW2MPO= true;
 	}
 	/* local */
 	void requestExit(const std::string name) {
@@ -362,6 +368,7 @@ protected:
 	bool reqNfcRead;
 	bool reqNfcDelete;
 	TxtOrderState ord_state;
+	bool reqMoveHBW2MPO;
 	/* local */
 	TxtJoysticksData joyData;
 	bool reqJoyData;

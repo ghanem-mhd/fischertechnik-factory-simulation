@@ -580,20 +580,8 @@ class callback : public virtual mqtt::callback
 						vgr_.requestSLDsorted(type1);
 						break;
 					}
-					case ft::VGR_START_ORDER:{
-						std::string stype = root["type"].asString();
-						SPDLOG_LOGGER_DEBUG(spdlog::get("console"), "  type:{}", stype);
-						if (stype == "WHITE")
-						{
-							vgr_.requestOrder(ft::WP_TYPE_WHITE);
-						} else if(stype == "RED")
-						{
-							vgr_.requestOrder(ft::WP_TYPE_RED);
-						} else if (stype == "BLUE")
-						{
-							vgr_.requestOrder(ft::WP_TYPE_BLUE);
-						}
-						break;
+					case ft::VGR_HBW_MPO:{
+						vgr_.requestMoveFromHBWToMPO();
 					}
 					default:
 						break;

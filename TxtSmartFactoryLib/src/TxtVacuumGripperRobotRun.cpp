@@ -114,18 +114,12 @@ void TxtVacuumGripperRobot::fsmStep()
 			FSM_TRANSITION( IDLE, color=green, label='req\nquit' );
 			reqQuit = false;
 		}
-#ifdef __DOCFSM__
-		FSM_TRANSITION( FAULT, color=red, label='wait' );
-#endif
 		std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 		break;
 	}
 	//-----------------------------------------------------------------
 	case INIT:
 	{
-#ifdef __DOCFSM__ //TODO remove, needed for graph
-		FSM_TRANSITION( INIT, color=blue, label='wait' );
-#endif
 		printState(INIT);
 		moveRef();
 		FSM_TRANSITION( IDLE, color=green, label='initialized' );
@@ -134,7 +128,6 @@ void TxtVacuumGripperRobot::fsmStep()
 	//-----------------------------------------------------------------
 	case IDLE:
 	{
-		//printState(IDLE);
 
 		//NFC requests
 		if (reqNfcDelete)
@@ -193,11 +186,11 @@ void TxtVacuumGripperRobot::fsmStep()
 		{
 			FSM_TRANSITION( START_DELIVERY, color=blue, label='dsi' );
 			reqStartDelivery = false;
-		}
-		/*else if (joyData.aY2 < -500)
+		} else if (reqMoveHBW2MPO)
 		{
-			//TODO local demo mode
-		}*/
+			FSM_TRANSITION( MOVE_HBW2MPO, color=blue, label='move from HBW to MPO' );
+			reqMoveHBW2MPO = false;
+		}
 		else if (joyData.aX2 > 500)
 		{
 			if (ord_state.state == WAITING_FOR_ORDER)
@@ -256,9 +249,6 @@ void TxtVacuumGripperRobot::fsmStep()
 				/*else if (uid == dps.getUIDOrderBLUE())*/
 			}
 		}
-#ifdef __DOCFSM__
-		FSM_TRANSITION( IDLE, color=green, label='wait' );
-#endif
 		break;
 	}
 	//-----------------------------------------------------------------
@@ -296,9 +286,28 @@ void TxtVacuumGripperRobot::fsmStep()
 			reqHBWfetched = false;
 			FSM_TRANSITION( MOVE_VGR2MPO, color=green, label='transport to MPO' );
 		}
-#ifdef __DOCFSM__
-		FSM_TRANSITION( VGR_WAIT_FETCHED, color=blue, label='wait' );
-#endif
+		break;
+	}
+	case MOVE_HBW2MPO:
+	{
+		printState(MOVE_HBW2MPO);
+
+		setTarget("hbw");
+		moveFromHBW1();
+		moveFromHBW2();
+		assert(mqttclient);
+		mqttclient->publishVGR_Ack(VGR_HBW_PICKED, reqWP_MPO, TIMEOUT_MS_PUBLISH);
+
+		setTarget("mpo");
+		moveMPO();
+
+		assert(mqttclient);
+		mqttclient->publishVGR_Ack(VGR_MPO_FINISHED, reqWP_MPO, TIMEOUT_MS_PUBLISH);
+
+		moveRef();
+
+		FSM_TRANSITION( IDLE, color=green, label='transport to MPO' );
+
 		break;
 	}
 	//-----------------------------------------------------------------
@@ -342,9 +351,6 @@ void TxtVacuumGripperRobot::fsmStep()
 			FSM_TRANSITION( IDLE, color=green, label='transport to MPO' );
 			reqMPOstarted = false;
 		}
-#ifdef __DOCFSM__
-		FSM_TRANSITION( START_PRODUCE, color=blue, label='wait' );
-#endif
 		break;
 	}
 	//-----------------------------------------------------------------
@@ -371,9 +377,6 @@ void TxtVacuumGripperRobot::fsmStep()
 			reqWP_HBW->printDebug();
 			FSM_TRANSITION( COLOR_DETECTION, color=blue, label='nfc tag ok' );
 		}
-#ifdef __DOCFSM__
-		FSM_TRANSITION( START_DELIVERY, color=blue, label='wait' );
-#endif
 		break;
 	}
 	//-----------------------------------------------------------------
@@ -397,9 +400,6 @@ void TxtVacuumGripperRobot::fsmStep()
 			FSM_TRANSITION( NFC_REJECTED, color=blue, label='color wrong' );
 			break;
 		}
-#ifdef __DOCFSM__
-		FSM_TRANSITION( COLOR_DETECTION, color=blue, label='wait' );
-#endif
 		break;
 	}
 	//-----------------------------------------------------------------
@@ -507,9 +507,6 @@ void TxtVacuumGripperRobot::fsmStep()
 		{
 			dps.setErrorDSO(true);
 		}
-#ifdef __DOCFSM__
-		FSM_TRANSITION( MOVE_PICKUP_WAIT, color=blue, label='wait' );
-#endif
 		break;
 	}
 	//-----------------------------------------------------------------
@@ -557,20 +554,17 @@ void TxtVacuumGripperRobot::fsmStep()
 		if (reqHBWfetched)
 		{
 			release();
-			assert(reqWP_HBW);
-			reqWP_HBW->printDebug();
-			proStorage.setTimestampNow(reqWP_HBW->tag_uid, WAREHOUSING_INDEX);
+			//assert(reqWP_HBW);
+			//reqWP_HBW->printDebug();
+			//proStorage.setTimestampNow(reqWP_HBW->tag_uid, WAREHOUSING_INDEX);
 
 			assert(mqttclient);
-			mqttclient->publishVGR_Ack(VGR_HBW_DROPPED, reqWP_HBW, TIMEOUT_MS_PUBLISH);
+			mqttclient->publishVGR_Ack(VGR_HBW_DROPPED, 0, TIMEOUT_MS_PUBLISH);
 
 			moveRef();
 			FSM_TRANSITION( IDLE, color=green, label='fetched' );
 			reqHBWfetched = false;
 		}
-#ifdef __DOCFSM__
-		FSM_TRANSITION( STORE_WP, color=blue, label='wait' );
-#endif
 		break;
 	}
 	//-----------------------------------------------------------------
@@ -608,9 +602,6 @@ void TxtVacuumGripperRobot::fsmStep()
 			}
 			std::this_thread::sleep_for(std::chrono::milliseconds(10));
 		}
-#ifdef __DOCFSM__
-		FSM_TRANSITION( CALIB_VGR, color=orange, label='wait' );
-#endif
 		break;
 	}
 	//-----------------------------------------------------------------
@@ -623,9 +614,6 @@ void TxtVacuumGripperRobot::fsmStep()
 			reqHBWcalib_end = true;
 			break;
 		}
-#ifdef __DOCFSM__
-		FSM_TRANSITION( CALIB_HBW, color=orange, label='wait' );
-#endif
 		break;
 	}
 	//-----------------------------------------------------------------
@@ -638,9 +626,6 @@ void TxtVacuumGripperRobot::fsmStep()
 			reqSLDcalib_end = true;
 			break;
 		}
-#ifdef __DOCFSM__
-		FSM_TRANSITION( CALIB_SLD, color=orange, label='wait' );
-#endif
 		break;
 	}
 	//-----------------------------------------------------------------
@@ -726,9 +711,6 @@ void TxtVacuumGripperRobot::fsmStep()
 			}
 			std::this_thread::sleep_for(std::chrono::milliseconds(10));
 		}
-#ifdef __DOCFSM__
-		FSM_TRANSITION( CALIB_DPS_NEXT, color=orange, label='next color' );
-#endif
 		break;
 	}
 	//-----------------------------------------------------------------
@@ -771,9 +753,6 @@ void TxtVacuumGripperRobot::fsmStep()
 			}
 			std::this_thread::sleep_for(std::chrono::milliseconds(10));
 		}
-#ifdef __DOCFSM__
-		FSM_TRANSITION( CALIB_VGR_NAV, color=orange, label='select pos' );
-#endif
 		break;
 	}
 	//-----------------------------------------------------------------
@@ -853,9 +832,6 @@ void TxtVacuumGripperRobot::fsmStep()
 				break; //-> NAV
 			}
 			moveJoystick();
-#ifdef __DOCFSM__
-			FSM_TRANSITION( CALIB_VGR_MOVE, color=orange, label='move' );
-#endif
 			std::this_thread::sleep_for(std::chrono::milliseconds(10));
 		}
 		FSM_TRANSITION( CALIB_VGR_NAV, color=orange, label='ok' );

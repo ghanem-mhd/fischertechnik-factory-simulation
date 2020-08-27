@@ -23,7 +23,7 @@ TxtVacuumGripperRobot::TxtVacuumGripperRobot(TxtTransfer* pT, ft::TxtMqttFactory
 	vgripper(pT, 6, 7), target(""), dps(pT, mqttclient),
 	reqQuit(false),
 	reqOrder(false), reqWP_order(),
-	reqNfcRead(false), reqNfcDelete(false),
+	reqNfcRead(false), reqNfcDelete(false),reqMoveHBW2MPO(false),
 	joyData(), reqJoyData(false),
 	reqMPOstarted(false), reqWP_MPO(0),
 	reqHBWstored(false), reqHBWfetched(false),
