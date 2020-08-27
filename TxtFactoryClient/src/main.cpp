@@ -144,6 +144,9 @@ class callback : public virtual mqtt::callback
 				int taskID = root["taskID"].asInt();
 				pcli->setTaskID(taskID);
 
+				std::string productID = root["productID"].asString();
+				pcli->setProductID(productID);
+
 				if (ft::trycheckTimestampTTL(sts))
 				{
 					ft::TxtWorkpiece* wp = NULL;
@@ -270,6 +273,9 @@ class callback : public virtual mqtt::callback
 
 				int taskID = root["taskID"].asInt();
 				pcli->setTaskID(taskID);
+
+				std::string productID = root["productID"].asString();
+				pcli->setProductID(productID);
 
 				ft::TxtHbwDoCode_t code = (ft::TxtHbwDoCode_t)root["code"].asInt();
 				SPDLOG_LOGGER_DEBUG(spdlog::get("console"), "  ts:{} code:{}", sts, (int)code);
@@ -513,6 +519,9 @@ class callback : public virtual mqtt::callback
 				int taskID = root["taskID"].asInt();
 				pcli->setTaskID(taskID);
 
+				std::string productID = root["productID"].asString();
+				pcli->setProductID(productID);
+
 				std::string sts = root["ts"].asString();
 				if (ft::trycheckTimestampTTL(sts))
 				{
@@ -703,6 +712,9 @@ class callback : public virtual mqtt::callback
 
 				int taskID = root["taskID"].asInt();
 				pcli->setTaskID(taskID);
+
+				std::string productID = root["productID"].asString();
+				pcli->setProductID(productID);
 
 				if (ft::trycheckTimestampTTL(sts))
 				{

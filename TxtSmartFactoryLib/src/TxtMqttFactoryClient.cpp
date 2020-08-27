@@ -618,6 +618,7 @@ void TxtMqttFactoryClient::publishStateStation(const std::string station, TxtLED
 	ft::getnowstr(sts);
 	try {
 		js_stateStation["taskID"] = currentTaskID;
+		js_stateStation["productID"] = currentProductID;
 		js_stateStation["ts"] = sts;
 		js_stateStation["station"] = station;
 		js_stateStation["code"] = (int)code;
@@ -902,6 +903,7 @@ void TxtMqttFactoryClient::publishMPO_Ack(TxtMpoAckCode_t code, long timeout)
 		js_ack["ts"] = sts;
 		js_ack["code"] = (int)code;
 		js_ack["taskID"] = (int) currentTaskID;
+		js_ack["productID"] = currentProductID;
 
 		sout_ack << js_ack;
 		try {
@@ -986,6 +988,7 @@ void TxtMqttFactoryClient::publishVGR_Ack(TxtVgrAckCode_t code, TxtWorkpiece* wp
 		js_ack["ts"] = sts;
 		js_ack["code"] = (int)code;
 		js_ack["taskID"] = (int) currentTaskID;
+		js_ack["productID"] = currentProductID;
 
 		if (wp)
 		{
@@ -1034,6 +1037,7 @@ void TxtMqttFactoryClient::publishHBW_Ack(TxtHbwAckCode_t code, TxtWorkpiece* wp
 		js_ack["ts"] = sts;
 		js_ack["code"] = (int)code;
 		js_ack["taskID"] = (int) currentTaskID;
+		js_ack["productID"] = currentProductID;
 
 		if (wp) {
 			Json::Value js_wp;
@@ -1081,6 +1085,7 @@ void TxtMqttFactoryClient::publishSLD_Ack(TxtSldAckCode_t code, TxtWPType_t type
 		js_ack["ts"] = sts;
 		js_ack["code"] = (int)code;
 		js_ack["taskID"] = (int) currentTaskID;
+		js_ack["productID"] = currentProductID;
 
 		js_ack["type"] = toString(type);
 		js_ack["colorValue"] = value;
@@ -1110,6 +1115,11 @@ void TxtMqttFactoryClient::publishSLD_Ack(TxtSldAckCode_t code, TxtWPType_t type
 	void TxtMqttFactoryClient::setTaskID(int newTaskID) {
 		SPDLOG_LOGGER_TRACE(spdlog::get("console"),"setTaskID",0);
 		currentTaskID = newTaskID;
+	}
+
+	void TxtMqttFactoryClient::setProductID(std::string productID) {
+		SPDLOG_LOGGER_TRACE(spdlog::get("console"),"setProductID",0);
+		currentProductID = productID;
 	}
 
 

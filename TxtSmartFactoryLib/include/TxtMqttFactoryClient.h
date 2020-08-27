@@ -8,6 +8,7 @@
 #ifndef TxtMqttFactoryClient_H_
 #define TxtMqttFactoryClient_H_
 
+#include <string>
 #include <mqtt/client.h>
 #include <json/json.h>
 
@@ -250,9 +251,11 @@ public:
 	void publishVGR_Ack(TxtVgrAckCode_t code, TxtWorkpiece* wp, long timeout);
 
 	int currentTaskID = 0;
+	std::string currentProductID = ".n.a";
 
 	// Custom
 	void setTaskID(int newTaskID);
+	void setProductID(std::string productID);
 
 protected:
 	//Factory remote
