@@ -110,9 +110,8 @@ public:
 		spdlog::get("file_logger")->error("program terminated by {}",name);
 		exit(1);
 	}
-	void requestVGRproduce(TxtWorkpiece* wp) {
-		SPDLOG_LOGGER_TRACE(spdlog::get("console"),"requestVGRproduce",0);
-		reqVGRwp = wp;
+	void requestProduce() {
+		SPDLOG_LOGGER_TRACE(spdlog::get("console"),"requestProduce",0);
 		reqVGRproduce= true;
 	}
 	void requestSLDstarted() {

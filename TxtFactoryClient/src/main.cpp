@@ -149,34 +149,10 @@ class callback : public virtual mqtt::callback
 
 				if (ft::trycheckTimestampTTL(sts))
 				{
-					ft::TxtWorkpiece* wp = NULL;
-					if (root["workpiece"] != Json::Value::null) {
-						wp = new ft::TxtWorkpiece();
-						wp->tag_uid = root["workpiece"]["id"].asString();
-						std::string stype = root["workpiece"]["type"].asString();
-						if (stype == "WHITE") {
-							wp->type = ft::WP_TYPE_WHITE;
-						} else if(stype == "RED") {
-							wp->type = ft::WP_TYPE_RED;
-						} else if (stype == "BLUE") {
-							wp->type = ft::WP_TYPE_BLUE;
-						} else {
-							wp->type = ft::WP_TYPE_NONE;
-						}
-						std::string sstate = root["workpiece"]["state"].asString();
-						if (sstate == "RAW") {
-							wp->state = ft::WP_STATE_RAW;
-						} else if(sstate == "PROCESSED") {
-							wp->state = ft::WP_STATE_PROCESSED;
-						} else if (sstate == "REJECTED") {
-							wp->state = ft::WP_STATE_REJECTED;
-						}
-					}
-
 					switch(code)
 					{
 					case ft::MPO_PRODUCE:
-						mpo_.requestVGRproduce(wp);
+						mpo_.requestProduce();
 						break;
 					default:
 						break;

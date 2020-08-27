@@ -84,9 +84,6 @@ void TxtMultiProcessingStation::fsmStep()
 			FSM_TRANSITION( IDLE, color=green, label='req\nquit' );
 			reqQuit = false;
 		}
-#ifdef __DOCFSM__
-		FSM_TRANSITION( FAULT, color=red, label='wait' );
-#endif
 		std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 		break;
 	}
@@ -94,9 +91,6 @@ void TxtMultiProcessingStation::fsmStep()
 	case INIT:
 	{
 		printState(INIT);
-#ifdef __DOCFSM__ //TODO remove, needed for graph
-		FSM_TRANSITION( INIT );
-#endif
 		setCompressor(true);
 		setValveOvenDoor(true);
 		std::this_thread::sleep_for(std::chrono::milliseconds(300));
@@ -115,7 +109,6 @@ void TxtMultiProcessingStation::fsmStep()
 	//-----------------------------------------------------------------
 	case IDLE:
 	{
-		//printState(IDLE);
 		if (reqVGRproduce)
 		{
 			auto start = std::chrono::system_clock::now();
@@ -138,9 +131,6 @@ void TxtMultiProcessingStation::fsmStep()
 			FSM_TRANSITION( BURN, color=blue, label='req\nVGR' );
 			reqVGRproduce = false;
 		}
-#ifdef __DOCFSM__
-		FSM_TRANSITION( IDLE, color=green, label='wait' );
-#endif
 		break;
 	}
 	//-----------------------------------------------------------------
@@ -274,12 +264,6 @@ void TxtMultiProcessingStation::fsmStep()
 			std::this_thread::sleep_for(std::chrono::milliseconds(2000));
 			convBelt.stop();
 			FSM_TRANSITION( IDLE, color=green, label='next' );
-		/*	reqSLDstarted = false;
-		}
-#ifdef __DOCFSM__
-		FSM_TRANSITION( TRANSPORT, color=blue, label='wait' );
-#endif
-		*/
 		break;
 	}
 	//-----------------------------------------------------------------
