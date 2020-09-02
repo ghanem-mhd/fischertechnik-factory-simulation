@@ -51,7 +51,7 @@ void TxtVacuumGripperRobot::fsmStep()
 			ord_state.type = reqWP_order.type;
 			ord_state.state = ORDERED;
 			assert(mqttclient);
-			mqttclient->publishStateOrder(ord_state, TIMEOUT_MS_PUBLISH);
+			//mqttclient->publishStateOrder(ord_state, TIMEOUT_MS_PUBLISH);
 		}
 
 		switch( newState )
@@ -177,7 +177,7 @@ void TxtVacuumGripperRobot::fsmStep()
 			ord_state.type = reqWP_order.type;
 			ord_state.state = ORDERED;
 			assert(mqttclient);
-			mqttclient->publishStateOrder(ord_state, TIMEOUT_MS_PUBLISH);
+			//mqttclient->publishStateOrder(ord_state, TIMEOUT_MS_PUBLISH);
 
 			FSM_TRANSITION( FETCH_WP_VGR, color=blue, label='req order' );
 			reqOrder = false;
@@ -323,7 +323,7 @@ void TxtVacuumGripperRobot::fsmStep()
 		ord_state.type = reqWP_MPO->type;
 		ord_state.state = IN_PROCESS;
 		assert(mqttclient);
-		mqttclient->publishStateOrder(ord_state, TIMEOUT_MS_PUBLISH);
+		//mqttclient->publishStateOrder(ord_state, TIMEOUT_MS_PUBLISH);
 
 		std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
@@ -497,7 +497,7 @@ void TxtVacuumGripperRobot::fsmStep()
 			ord_state.type = reqWP_order.type;
 			ord_state.state = SHIPPED;
 			assert(mqttclient);
-			mqttclient->publishStateOrder(ord_state, TIMEOUT_MS_PUBLISH);
+			//mqttclient->publishStateOrder(ord_state, TIMEOUT_MS_PUBLISH);
 			mqttclient->publishVGR_Ack(VGR_SLD_FINISHED, 0, TIMEOUT_MS_PUBLISH);
 			std::this_thread::sleep_for(std::chrono::milliseconds(2000));
 
@@ -517,8 +517,8 @@ void TxtVacuumGripperRobot::fsmStep()
 		ord_state.type = reqWP_order.type;
 		ord_state.state = WAITING_FOR_ORDER;
 		assert(mqttclient);
-		mqttclient->publishStateOrder(ord_state, TIMEOUT_MS_PUBLISH);
-		mqttclient->publishStateOrder(ord_state, TIMEOUT_MS_PUBLISH); //2x workaround if message is lost
+		//mqttclient->publishStateOrder(ord_state, TIMEOUT_MS_PUBLISH);
+		//mqttclient->publishStateOrder(ord_state, TIMEOUT_MS_PUBLISH); //2x workaround if message is lost
 		FSM_TRANSITION( IDLE, color=blue, label='next' );
 		break;
 	}
