@@ -144,8 +144,8 @@ class callback : public virtual mqtt::callback
 				int taskID = root["taskID"].asInt();
 				pcli->setTaskID(taskID);
 
-				std::string productID = root["productID"].asString();
-				pcli->setProductID(productID);
+				std::string productDID = root["productDID"].asString();
+				pcli->setProductDID(productDID);
 
 				if (ft::trycheckTimestampTTL(sts))
 				{
@@ -250,8 +250,8 @@ class callback : public virtual mqtt::callback
 				int taskID = root["taskID"].asInt();
 				pcli->setTaskID(taskID);
 
-				std::string productID = root["productID"].asString();
-				pcli->setProductID(productID);
+				std::string productDID = root["productDID"].asString();
+				pcli->setProductDID(productDID);
 
 				ft::TxtHbwDoCode_t code = (ft::TxtHbwDoCode_t)root["code"].asInt();
 				SPDLOG_LOGGER_DEBUG(spdlog::get("console"), "  ts:{} code:{}", sts, (int)code);
@@ -495,8 +495,8 @@ class callback : public virtual mqtt::callback
 				int taskID = root["taskID"].asInt();
 				pcli->setTaskID(taskID);
 
-				std::string productID = root["productID"].asString();
-				pcli->setProductID(productID);
+				std::string productDID = root["productDID"].asString();
+				pcli->setProductDID(productDID);
 
 				std::string sts = root["ts"].asString();
 				if (ft::trycheckTimestampTTL(sts))
@@ -674,21 +674,24 @@ class callback : public virtual mqtt::callback
 				ft::TxtSldDoCode_t code = (ft::TxtSldDoCode_t)root["code"].asInt();
 				SPDLOG_LOGGER_DEBUG(spdlog::get("console"), "  ts:{} code:{}", sts, (int)code);
 
-				int taskID = root["taskID"].asInt();
-				pcli->setTaskID(taskID);
-
-				std::string productID = root["productID"].asString();
-				pcli->setProductID(productID);
-
 				if (ft::trycheckTimestampTTL(sts))
 				{
-					switch(code)
-					{
-					case ft::SLD_START:
+					if (code == ft::SLD_START){
+						int taskID = root["taskID"].asInt();
+						pcli->setTaskID(taskID);
+
+						int processID = root["processID"].asInt();
+						pcli->setProcessID(processID);
+
+						std::string productDID = root["productDID"].asString();
+						pcli->setProductDID(productDID);
+
 						sld_.requestVGRstart();
-						break;
-					default:
-						break;
+					}
+
+					if (code == ft::SLD_SOUND){
+						int soundID = root["soundID"].asInt();
+						sld_.makeSound(soundID);
 					}
 				}
 			} catch (const Json::RuntimeError& exc) {

@@ -616,7 +616,8 @@ void TxtMqttFactoryClient::publishStateStation(const std::string station, TxtLED
 	ft::getnowstr(sts);
 	try {
 		js_stateStation["taskID"] = currentTaskID;
-		js_stateStation["productID"] = currentProductID;
+		js_stateStation["processID"] = currentProcessID;
+		js_stateStation["productDID"] = currentProductDID;
 		js_stateStation["ts"] = sts;
 		js_stateStation["station"] = station;
 		js_stateStation["code"] = (int)code;
@@ -900,8 +901,9 @@ void TxtMqttFactoryClient::publishMPO_Ack(TxtMpoAckCode_t code, long timeout)
 	try {
 		js_ack["ts"] = sts;
 		js_ack["code"] = (int)code;
-		js_ack["taskID"] = (int) currentTaskID;
-		js_ack["productID"] = currentProductID;
+		js_ack["taskID"] = currentTaskID;
+		js_ack["processID"] = currentProcessID;
+		js_ack["productDID"] = currentProductDID;
 
 		sout_ack << js_ack;
 		try {
@@ -985,8 +987,9 @@ void TxtMqttFactoryClient::publishVGR_Ack(TxtVgrAckCode_t code, TxtWorkpiece* wp
 	try {
 		js_ack["ts"] = sts;
 		js_ack["code"] = (int)code;
-		js_ack["taskID"] = (int) currentTaskID;
-		js_ack["productID"] = currentProductID;
+		js_ack["taskID"] = currentTaskID;
+		js_ack["processID"] = currentProcessID;
+		js_ack["productDID"] = currentProductDID;
 
 		if (wp)
 		{
@@ -1034,8 +1037,9 @@ void TxtMqttFactoryClient::publishHBW_Ack(TxtHbwAckCode_t code, TxtWorkpiece* wp
 	try {
 		js_ack["ts"] = sts;
 		js_ack["code"] = (int)code;
-		js_ack["taskID"] = (int) currentTaskID;
-		js_ack["productID"] = currentProductID;
+		js_ack["taskID"] = currentTaskID;
+		js_ack["processID"] = currentProcessID;
+		js_ack["productDID"] = currentProductDID;
 
 		if (wp) {
 			Json::Value js_wp;
@@ -1082,8 +1086,9 @@ void TxtMqttFactoryClient::publishSLD_Ack(TxtSldAckCode_t code, TxtWPType_t type
 	try {
 		js_ack["ts"] = sts;
 		js_ack["code"] = (int)code;
-		js_ack["taskID"] = (int) currentTaskID;
-		js_ack["productID"] = currentProductID;
+		js_ack["taskID"] = currentTaskID;
+		js_ack["processID"] = currentProcessID;
+		js_ack["productDID"] = currentProductDID;
 
 		js_ack["type"] = toString(type);
 		js_ack["colorValue"] = value;
@@ -1108,6 +1113,7 @@ void TxtMqttFactoryClient::publishSLD_Ack(TxtSldAckCode_t code, TxtWPType_t type
 	}
 	pthread_mutex_unlock(&m_mutex);
 	SPDLOG_LOGGER_DEBUG(spdlog::get("console"), "pthread_mutex_unlock publishSLD_Ack",0);
+	resetCurrentValues();
 }
 
 	void TxtMqttFactoryClient::setTaskID(int newTaskID) {
@@ -1115,9 +1121,21 @@ void TxtMqttFactoryClient::publishSLD_Ack(TxtSldAckCode_t code, TxtWPType_t type
 		currentTaskID = newTaskID;
 	}
 
-	void TxtMqttFactoryClient::setProductID(std::string productID) {
-		SPDLOG_LOGGER_TRACE(spdlog::get("console"),"setProductID",0);
-		currentProductID = productID;
+	void TxtMqttFactoryClient::setProcessID(int processID) {
+		SPDLOG_LOGGER_TRACE(spdlog::get("console"),"setProcessID",0);
+		currentProcessID = processID;
+	}
+
+	void TxtMqttFactoryClient::setProductDID(std::string productDID) {
+		SPDLOG_LOGGER_TRACE(spdlog::get("console"),"setProductDID",0);
+		currentProductDID = productDID;
+	}
+
+	void TxtMqttFactoryClient::resetCurrentValues() {
+		SPDLOG_LOGGER_TRACE(spdlog::get("console"),"reset",0);
+		currentTaskID = 0;
+		currentProcessID = 0;
+		currentProductDID = "n.a";
 	}
 
 

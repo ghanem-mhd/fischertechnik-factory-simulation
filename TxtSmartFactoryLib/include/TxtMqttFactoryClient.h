@@ -105,7 +105,8 @@ typedef enum
 
 typedef enum
 {
-	SLD_START=8,
+	SLD_SOUND=1,
+	SLD_START=2
 } TxtSldDoCode_t;
 
 class action_listener_subscribe : public virtual mqtt::iaction_listener
@@ -251,11 +252,14 @@ public:
 	void publishVGR_Ack(TxtVgrAckCode_t code, TxtWorkpiece* wp, long timeout);
 
 	int currentTaskID = 0;
-	std::string currentProductID = ".n.a";
+	int currentProcessID = 0;
+	std::string currentProductDID = ".n.a";
 
 	// Custom
-	void setTaskID(int newTaskID);
-	void setProductID(std::string productID);
+	void setTaskID(int taskID);
+	void setProcessID(int processID);
+	void setProductDID(std::string productDID);
+	void resetCurrentValues();
 
 protected:
 	//Factory remote
