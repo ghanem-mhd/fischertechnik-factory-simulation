@@ -59,6 +59,7 @@ void TxtHighBayWarehouse::fsmStep()
 		//-----------------------------------------------------------------
 		case IDLE:
 		{
+			mqttclient->resetCurrentValues();
 			printEntryState(IDLE);
 			setSpeed(512);
 			moveRef();
@@ -93,9 +94,6 @@ void TxtHighBayWarehouse::fsmStep()
 			FSM_TRANSITION( IDLE, color=green, label='req\nquit' );
 			reqQuit = false;
 		}
-#ifdef __DOCFSM__
-		FSM_TRANSITION( FAULT, color=red, label='wait' );
-#endif
 		std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 		break;
 	}
@@ -103,9 +101,6 @@ void TxtHighBayWarehouse::fsmStep()
 	case INIT:
 	{
 		printState(INIT);
-#ifdef __DOCFSM__ //TODO remove, needed for graph
-		FSM_TRANSITION( INIT );
-#endif
 		moveRef();
 		FSM_TRANSITION( IDLE, color=green, label='initialized' );
 		break;
@@ -135,9 +130,6 @@ void TxtHighBayWarehouse::fsmStep()
 			sound.info1();
 			reqVGRresetStorage = false;
 		}
-#ifdef __DOCFSM__
-		FSM_TRANSITION( IDLE, color=green, label='wait' );
-#endif
 		break;
 	}
 	//-----------------------------------------------------------------
@@ -155,9 +147,6 @@ void TxtHighBayWarehouse::fsmStep()
 		{
 			FSM_TRANSITION( FAULT, color=red, label='error' );
 		}
-#ifdef __DOCFSM__
-		FSM_TRANSITION( FETCH_CONTAINER, color=blue, label='wait' );
-#endif
 		break;
 	}
 	//-----------------------------------------------------------------
@@ -179,16 +168,13 @@ void TxtHighBayWarehouse::fsmStep()
 			}
 			reqVGRstore = false;
 		}
-#ifdef __DOCFSM__
-		FSM_TRANSITION( STORE_WP, color=blue, label='wait' );
-#endif
 		break;
 	}
 	//-----------------------------------------------------------------
 	case FETCH_WP:
 	{
 		printState(FETCH_WP);
-		if (reqVGRwp && fetch(reqVGRwp->type))
+		if (reqVGRwp && fetch(reqVGRwp->product_DID))
 		{
 			assert(mqttclient);
 			mqttclient->publishHBW_Ack(HBW_FETCHED, reqVGRwp, TIMEOUT_MS_PUBLISH);
@@ -196,11 +182,10 @@ void TxtHighBayWarehouse::fsmStep()
 		}
 		else
 		{
-			FSM_TRANSITION( FAULT, color=red, label='error' );
+			assert(mqttclient);
+			mqttclient->publishHBW_Ack(HBW_FETCH_FAIL, reqVGRwp, TIMEOUT_MS_PUBLISH);
+			FSM_TRANSITION( IDLE, color=green, label='workpiece\nstored' );
 		}
-#ifdef __DOCFSM__
-		FSM_TRANSITION( FETCH_WP, color=blue, label='wait' );
-#endif
 		break;
 	}
 	//-----------------------------------------------------------------
@@ -212,9 +197,6 @@ void TxtHighBayWarehouse::fsmStep()
 			FSM_TRANSITION( STORE_CONTAINER, color=blue, label='req store\ncontainer' );
 			reqVGRstoreContainer = false;
 		}
-#ifdef __DOCFSM__
-		FSM_TRANSITION( FETCH_WP_WAIT, color=blue, label='wait' );
-#endif
 		break;
 	}
 	//-----------------------------------------------------------------
@@ -232,9 +214,6 @@ void TxtHighBayWarehouse::fsmStep()
 		{
 			FSM_TRANSITION( FAULT, color=red, label='error' );
 		}
-#ifdef __DOCFSM__
-		FSM_TRANSITION( STORE_CONTAINER, color=blue, label='wait' );
-#endif
 		break;
 	}
 	//-----------------------------------------------------------------
@@ -290,9 +269,6 @@ void TxtHighBayWarehouse::fsmStep()
 			}
 			std::this_thread::sleep_for(std::chrono::milliseconds(10));
 		}
-#ifdef __DOCFSM__
-		FSM_TRANSITION( CALIB_HBW_NAV, color=orange, label='select pos' );
-#endif
 		break;
 	}
 	//-----------------------------------------------------------------
@@ -337,9 +313,6 @@ void TxtHighBayWarehouse::fsmStep()
 				break; //-> NAV
 			}
 			moveJoystick();
-#ifdef __DOCFSM__
-			FSM_TRANSITION( CALIB_MOVE, color=orange, label='move' );
-#endif
 			std::this_thread::sleep_for(std::chrono::milliseconds(10));
 		}
 		FSM_TRANSITION( CALIB_HBW_NAV, color=green, label='ok' );

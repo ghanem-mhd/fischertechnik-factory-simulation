@@ -61,6 +61,7 @@ void TxtMultiProcessingStation::fsmStep()
 		//-------------------------------------------------------------
 		case IDLE:
 		{
+			mqttclient->resetCurrentValues();
 			printEntryState(IDLE);
 			setActStatus(false, SM_READY);
 			break;
@@ -140,6 +141,9 @@ void TxtMultiProcessingStation::fsmStep()
 
 		setActStatus(true, SM_BUSY);
 
+		assert(mqttclient);
+		mqttclient->publishMPO_Ack(MPO_MELTED, TIMEOUT_MS_PUBLISH);
+
 		//in
 		setCompressor(true);
 		std::this_thread::sleep_for(std::chrono::milliseconds(2500));
@@ -202,6 +206,10 @@ void TxtMultiProcessingStation::fsmStep()
 	{
 		printState(TABLE_SAW);
 		axisRotTable.moveS2();
+
+		assert(mqttclient);
+		mqttclient->publishMPO_Ack(MPO_MILLED, TIMEOUT_MS_PUBLISH);
+
 		std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 		setSawRight();
 		std::this_thread::sleep_for(std::chrono::milliseconds(2500));

@@ -373,7 +373,7 @@ void TxtVacuumGripperRobot::fsmStep()
 				reqWP_HBW->printDebug();
 				delete reqWP_HBW;
 			}
-			reqWP_HBW = new TxtWorkpiece(uid,WP_TYPE_NONE,WP_STATE_RAW);
+			reqWP_HBW = new TxtWorkpiece(uid,WP_TYPE_NONE,WP_STATE_RAW, "");
 			reqWP_HBW->printDebug();
 			FSM_TRANSITION( COLOR_DETECTION, color=blue, label='nfc tag ok' );
 		}
@@ -928,7 +928,7 @@ void TxtVacuumGripperRobot::initDashboard()
 	mqttclient->publishStateDSI(ft::LEDS_OFF, "", TIMEOUT_MS_PUBLISH, 0, "");
 	mqttclient->publishStateDSO(ft::LEDS_OFF, "", TIMEOUT_MS_PUBLISH, 0, "");
 	mqttclient->publishStateOrder(ord_state, TIMEOUT_MS_PUBLISH);
-	TxtWorkpiece wp_empty("",WP_TYPE_NONE,WP_STATE_RAW);
+	TxtWorkpiece wp_empty("",WP_TYPE_NONE,WP_STATE_RAW, "");
 	History_map_t map_hist;
 	mqttclient->publishNfcDS(wp_empty, map_hist, TIMEOUT_MS_PUBLISH);
 }

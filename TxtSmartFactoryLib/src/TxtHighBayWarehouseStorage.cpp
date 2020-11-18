@@ -82,7 +82,8 @@ bool TxtHighBayWarehouseStorage::loadStorageState()
     	            wp[i][j] = new TxtWorkpiece(
     	            		(std::string)val_wp["tag_uid"].asString(),
     	            		(TxtWPType_t)(val_wp["type"].asInt()),
-    	            		(TxtWPState_t)(val_wp["state"].asInt()));
+    	            		(TxtWPState_t)(val_wp["state"].asInt()),
+							(std::string)val_wp["product_DID"].asString());
     	    		std::cout << loc << " tag_uid:" << wp[i][j]->tag_uid
     	    				<< " :" << (int)wp[i][j]->state
 							<< " :" << (int)wp[i][j]->type <<std::endl;
@@ -111,6 +112,7 @@ bool TxtHighBayWarehouseStorage::saveStorageState()
 	        	event["Storage"][loc]["tag_uid"] = wp[i][j]->tag_uid;
 	        	event["Storage"][loc]["state"] = (int)wp[i][j]->state;
 	        	event["Storage"][loc]["type"] = (int)wp[i][j]->type;
+				event["Storage"][loc]["product_DID"] = wp[i][j]->product_DID;
 	        }
 		}
 	}
@@ -147,23 +149,6 @@ void TxtHighBayWarehouseStorage::resetStorageState()
 bool TxtHighBayWarehouseStorage::storeContainer()
 {
 	SPDLOG_LOGGER_TRACE(spdlog::get("console"), "storeContainer",0);
-	/*nextStorePos.x = -1; //set invalid pos
-	nextStorePos.y = -1;
-	bool found = false;
-	for(int i=0;i<3 && !found;i++)
-	{
-		for(int j=2;j>=0&& !found;j--)
-		{
-			StoragePos2 p;
-			p.x = i; p.y = j;
-			if (wp[i][j] == 0)
-			{
-				SPDLOG_LOGGER_DEBUG(spdlog::get("console"), "0 -> nextStorePos {} {}",p.x, p.y);
-				nextStorePos = p;
-				found = true;
-			}
-		}
-	}*/
 	if (isValidPos(nextFetchPos)) //nextFetchPos
 	{
 		SPDLOG_LOGGER_DEBUG(spdlog::get("console"), "OK -> nextStorePos",0);
@@ -178,30 +163,6 @@ bool TxtHighBayWarehouseStorage::storeContainer()
 bool TxtHighBayWarehouseStorage::store(TxtWorkpiece _wp)
 {
 	SPDLOG_LOGGER_TRACE(spdlog::get("console"), "store wp:{} {} {}",_wp.tag_uid,_wp.type,_wp.state);
-	/*nextStorePos.x = -1; //set invalid pos
-	nextStorePos.y = -1;
-	if (_wp.type == WP_TYPE_NONE)
-	{
-		SPDLOG_LOGGER_DEBUG(spdlog::get("console"), "NONE -> return false",0);
-		return false;
-	} else
-	{
-		bool found = false;
-		for(int i=0;i<3 && !found;i++)
-		{
-			for(int j=2;j>=0&& !found;j--)
-			{
-				StoragePos2 p;
-				p.x = i; p.y = j;
-				if (wp[i][j] == 0)
-				{
-					SPDLOG_LOGGER_DEBUG(spdlog::get("console"), "0 -> nextStorePos {} {}",p.x, p.y);
-					nextStorePos = p;
-					found = true;
-				}
-			}
-		}
-	}*/
 	if (isValidPos(nextFetchPos))
 	{
 		SPDLOG_LOGGER_DEBUG(spdlog::get("console"), "OK -> nextStorePos type {} ",_wp.type);
@@ -213,12 +174,12 @@ bool TxtHighBayWarehouseStorage::store(TxtWorkpiece _wp)
 	return false;
 }
 
-bool TxtHighBayWarehouseStorage::fetch(TxtWPType_t t)
+bool TxtHighBayWarehouseStorage::fetch(std::string productDID)
 {
-	SPDLOG_LOGGER_TRACE(spdlog::get("console"), "fetch {}",t);
+	SPDLOG_LOGGER_TRACE(spdlog::get("console"), "fetch {}",productDID);
 	nextFetchPos.x = -1; //set invalid pos
 	nextFetchPos.y = -1;
-	if (t == WP_TYPE_NONE)
+	if (productDID == "")
 	{
 		SPDLOG_LOGGER_DEBUG(spdlog::get("console"), "STORAGE_EMPTY -> return false",0);
 		return false;
@@ -233,9 +194,9 @@ bool TxtHighBayWarehouseStorage::fetch(TxtWPType_t t)
 				p.x = i; p.y = j;
 				if (wp[i][j] == NULL)
 					continue;
-				if (wp[i][j]->type == t)
+				if (wp[i][j]->product_DID == productDID)
 				{
-					SPDLOG_LOGGER_DEBUG(spdlog::get("console"), "t {} -> nextFetchPos {} {}",t, p.x, p.y);
+					SPDLOG_LOGGER_DEBUG(spdlog::get("console"), "t {} -> nextFetchPos {} {}",productDID, p.x, p.y);
 					nextFetchPos = p;
 					found = true;
 				}
@@ -244,7 +205,7 @@ bool TxtHighBayWarehouseStorage::fetch(TxtWPType_t t)
 	}
 	if (isValidPos(nextFetchPos))
 	{
-		SPDLOG_LOGGER_DEBUG(spdlog::get("console"), "OK -> nextFetchPos type {} ",t);
+		SPDLOG_LOGGER_DEBUG(spdlog::get("console"), "OK -> nextFetchPos type {} ",productDID);
 		delete wp[nextFetchPos.x][nextFetchPos.y];
 		wp[nextFetchPos.x][nextFetchPos.y] = 0;
 		Notify();

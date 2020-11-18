@@ -220,7 +220,7 @@ public:
 	}
 	void requestOrder(TxtWPType_t type) {
 		SPDLOG_LOGGER_TRACE(spdlog::get("console"),"requestOrder {}",(int)type);
-		reqWP_order = ft::TxtWorkpiece("", type, WP_STATE_RAW);
+		reqWP_order = ft::TxtWorkpiece("", type, WP_STATE_RAW, "");
 		reqOrder= true;
 	}
 	void requestNfcRead() {

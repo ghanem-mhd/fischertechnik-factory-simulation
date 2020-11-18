@@ -67,7 +67,7 @@ std::string TxtDeliveryPickupStation::nfcDeviceDeleteWriteRawRead(ft::TxtWPType_
 {
 	SPDLOG_LOGGER_TRACE(spdlog::get("console"), "moveNFCDeviceDeleteWriteRawRead", 0);
 	nfcDelete();
-	TxtWorkpiece wp("", c, WP_STATE_RAW);
+	TxtWorkpiece wp("", c, WP_STATE_RAW,"");
 	nfcWrite(wp, vts, mask_ts);
 	std::string sid = nfcRead();
 	return sid;
@@ -76,7 +76,7 @@ std::string TxtDeliveryPickupStation::nfcDeviceDeleteWriteRawRead(ft::TxtWPType_
 std::string TxtDeliveryPickupStation::nfcDeviceWriteProducedRead(ft::TxtWPType_t c, std::vector<int64_t> vts, uint8_t mask_ts)
 {
 	SPDLOG_LOGGER_TRACE(spdlog::get("console"), "moveNFCDeviceWriteProducedRead", 0);
-	TxtWorkpiece wp("", c, WP_STATE_PROCESSED);
+	TxtWorkpiece wp("", c, WP_STATE_PROCESSED,"");
 	nfcWrite(wp, vts, mask_ts);
 	std::string sid = nfcRead();
 	return sid;
@@ -86,7 +86,7 @@ std::string TxtDeliveryPickupStation::nfcDeviceWriteRejectedRead(ft::TxtWPType_t
 {
 	SPDLOG_LOGGER_TRACE(spdlog::get("console"), "moveNFCDeviceWriteRejectedRead", 0);
 	nfcDelete();
-	TxtWorkpiece wp("", c, WP_STATE_REJECTED);
+	TxtWorkpiece wp("", c, WP_STATE_REJECTED,"");
 	nfcWrite(wp, vts, mask_ts);
 	std::string sid = nfcRead();
 	return sid;

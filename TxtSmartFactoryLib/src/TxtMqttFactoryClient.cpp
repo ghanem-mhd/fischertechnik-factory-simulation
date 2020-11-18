@@ -678,9 +678,10 @@ void TxtMqttFactoryClient::publishStock(Stock_map_t map_wps, long timeout)
 				js_wpRoot["location"] = loc;
 		    	if (wp) {
 			    	Json::Value js_wp;
-			    	js_wp["id"] = wp->tag_uid;
+			    	js_wp["id"] = "did:ethr:" + wp->product_DID;
 			    	js_wp["type"] = toString(wp->type);
 			    	js_wp["state"] = toString(wp->state);
+					js_wp["product_DID"] = wp->product_DID;
 			    	js_wpRoot["workpiece"] = js_wp;
 		    	} else {
 			    	js_wpRoot["workpiece"] = Json::Value::null;

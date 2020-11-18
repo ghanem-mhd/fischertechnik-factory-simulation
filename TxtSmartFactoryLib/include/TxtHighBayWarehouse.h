@@ -141,9 +141,8 @@ public:
 		spdlog::get("file_logger")->error("program terminated by {}",name);
 		exit(1);
 	}
-	void requestVGRfetchContainer(TxtWorkpiece* wp) {
+	void requestVGRfetchContainer() {
 		SPDLOG_LOGGER_TRACE(spdlog::get("console"),"reqVGRfetchContainer",0);
-		reqVGRwp = wp;
 		reqVGRfetchContainer= true;
 	}
 	void requestVGRstore(TxtWorkpiece* wp) {
@@ -156,9 +155,8 @@ public:
 		reqVGRwp = wp;
 		reqVGRfetch= true;
 	}
-	void requestVGRstoreContainer(TxtWorkpiece* wp) {
+	void requestVGRstoreContainer() {
 		SPDLOG_LOGGER_TRACE(spdlog::get("console"),"requestVGRstoreContainer",0);
-		reqVGRwp = wp;
 		reqVGRstoreContainer= true;
 	}
 	void requestVGRcalib() {
@@ -173,6 +171,26 @@ public:
 		SPDLOG_LOGGER_TRACE(spdlog::get("console"),"requestJoyBut",0);
 		joyData = jd;
 		reqJoyData = true;
+	}
+	void makeSound(int code) {
+		SPDLOG_LOGGER_TRACE(spdlog::get("console"),"makeSound",0);
+		switch(code)
+		{
+		case 0:
+			sound.info1();
+			break;
+		case 1:
+			sound.info2();
+			break;
+		case 2:
+			sound.error();
+			break;
+		case 3:
+			sound.warn();
+			break;
+		default:
+			break;
+		}
 	}
 
 
@@ -197,7 +215,7 @@ public:
 
 	bool store(TxtWorkpiece wp);
 	bool storeContainer();
-	bool fetch(TxtWPType_t t);
+	bool fetch(std::string productDID);
 	bool fetchContainer();
 
 	bool canColorBeStored(TxtWPType_t c);

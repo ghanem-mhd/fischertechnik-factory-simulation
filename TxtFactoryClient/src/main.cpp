@@ -141,23 +141,27 @@ class callback : public virtual mqtt::callback
 				ft::TxtMpoDoCode_t code = (ft::TxtMpoDoCode_t)root["code"].asInt();
 				SPDLOG_LOGGER_DEBUG(spdlog::get("console"), "  ts:{} code:{}", sts, (int)code);
 
-				int taskID = root["taskID"].asInt();
-				pcli->setTaskID(taskID);
-
-				std::string productDID = root["productDID"].asString();
-				pcli->setProductDID(productDID);
-
 				if (ft::trycheckTimestampTTL(sts))
 				{
-					switch(code)
-					{
-					case ft::MPO_PRODUCE:
+					if (code == ft::MPO_PRODUCE){
+						int taskID = root["taskID"].asInt();
+						pcli->setTaskID(taskID);
+
+						int processID = root["processID"].asInt();
+						pcli->setProcessID(processID);
+
+						std::string productDID = root["productDID"].asString();
+						pcli->setProductDID(productDID);
+
 						mpo_.requestProduce();
-						break;
-					default:
-						break;
+					}
+
+					if (code == ft::MPO_SOUND){
+						int soundID = root["soundID"].asInt();
+						mpo_.makeSound(soundID);
 					}
 				}
+
 			} catch (const Json::RuntimeError& exc) {
 				std::cout << "Error: " << exc.what() << std::endl;
 			}
@@ -247,57 +251,63 @@ class callback : public virtual mqtt::callback
 				ssin >> root;
 				std::string sts = root["ts"].asString();
 
-				int taskID = root["taskID"].asInt();
-				pcli->setTaskID(taskID);
-
-				std::string productDID = root["productDID"].asString();
-				pcli->setProductDID(productDID);
-
 				ft::TxtHbwDoCode_t code = (ft::TxtHbwDoCode_t)root["code"].asInt();
 				SPDLOG_LOGGER_DEBUG(spdlog::get("console"), "  ts:{} code:{}", sts, (int)code);
 
-				if (ft::trycheckTimestampTTL(sts))
-				{
-					ft::TxtWorkpiece* wp = NULL;
-					if (root["workpiece"] != Json::Value::null) {
-						wp = new ft::TxtWorkpiece();
-						wp->tag_uid = root["workpiece"]["id"].asString();
-						std::string stype = root["workpiece"]["type"].asString();
-						if (stype == "WHITE") {
-							wp->type = ft::WP_TYPE_WHITE;
-						} else if(stype == "RED") {
-							wp->type = ft::WP_TYPE_RED;
-						} else if (stype == "BLUE") {
-							wp->type = ft::WP_TYPE_BLUE;
-						} else {
-							wp->type = ft::WP_TYPE_NONE;
-						}
-						std::string sstate = root["workpiece"]["state"].asString();
-						if (sstate == "RAW") {
-							wp->state = ft::WP_STATE_RAW;
-						} else if(sstate == "PROCESSED") {
-							wp->state = ft::WP_STATE_PROCESSED;
-						} else if (sstate == "REJECTED") {
-							wp->state = ft::WP_STATE_REJECTED;
-						}
-					}
-
-					switch(code)
+				if (code == ft::HBW_SOUND){
+					int soundID = root["soundID"].asInt();
+					hbw_.makeSound(soundID);
+				}else{
+					int taskID = root["taskID"].asInt();
+					pcli->setTaskID(taskID);
+					int processID = root["processID"].asInt();
+					pcli->setProcessID(processID);
+					std::string productDID = root["productDID"].asString();
+					pcli->setProductDID(productDID);
+					if (ft::trycheckTimestampTTL(sts))
 					{
-					case ft::HBW_FETCHCONTAINER:
-						hbw_.requestVGRfetchContainer(wp);
-						break;
-					case ft::HBW_STORE_WP:
-						hbw_.requestVGRstore(wp);
-						break;
-					case ft::HBW_FETCH_WP:
-						hbw_.requestVGRfetch(wp);
-						break;
-					case ft::HBW_STORECONTAINER:
-						hbw_.requestVGRstoreContainer(wp);
-						break;
-					default:
-						break;
+						ft::TxtWorkpiece* wp = NULL;
+						if (root["workpiece"] != Json::Value::null) {
+							wp = new ft::TxtWorkpiece();
+							wp->product_DID = productDID;
+							wp->tag_uid = root["workpiece"]["id"].asString();
+							std::string stype = root["workpiece"]["type"].asString();
+							if (stype == "WHITE") {
+								wp->type = ft::WP_TYPE_WHITE;
+							} else if(stype == "RED") {
+								wp->type = ft::WP_TYPE_RED;
+							} else if (stype == "BLUE") {
+								wp->type = ft::WP_TYPE_BLUE;
+							} else {
+								wp->type = ft::WP_TYPE_NONE;
+							}
+							std::string sstate = root["workpiece"]["state"].asString();
+							if (sstate == "RAW") {
+								wp->state = ft::WP_STATE_RAW;
+							} else if(sstate == "PROCESSED") {
+								wp->state = ft::WP_STATE_PROCESSED;
+							} else if (sstate == "REJECTED") {
+								wp->state = ft::WP_STATE_REJECTED;
+							}
+						}
+
+						switch(code)
+						{
+						case ft::HBW_FETCHCONTAINER:
+							hbw_.requestVGRfetchContainer();
+							break;
+						case ft::HBW_STORE_WP:
+							hbw_.requestVGRstore(wp);
+							break;
+						case ft::HBW_FETCH_WP:
+							hbw_.requestVGRfetch(wp);
+							break;
+						case ft::HBW_STORECONTAINER:
+							hbw_.requestVGRstoreContainer();
+							break;
+						default:
+							break;
+						}
 					}
 				}
 			} catch (const Json::RuntimeError& exc) {

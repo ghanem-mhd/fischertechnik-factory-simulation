@@ -236,11 +236,11 @@ bool TxtHighBayWarehouse::storeContainer()
 	return false;
 }
 
-bool TxtHighBayWarehouse::fetch(TxtWPType_t t)
+bool TxtHighBayWarehouse::fetch(std::string productDID)
 {
 	SPDLOG_LOGGER_TRACE(spdlog::get("console"), "fetch {}", t);
 	setActStatus(true, SM_BUSY);
-	if (storage.fetch(t))
+	if (storage.fetch(productDID))
 	{
 		StoragePos2 p = storage.getNextFetchPos();
 		if (p.x<0 || p.y<0) return false;

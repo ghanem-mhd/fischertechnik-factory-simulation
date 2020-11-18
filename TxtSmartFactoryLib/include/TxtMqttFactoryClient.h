@@ -43,12 +43,15 @@ typedef enum
 {
 	MPO_EXIT=0,
 	MPO_STARTED=1,
-	MPO_PRODUCED=2
+	MPO_PRODUCED=2,
+	MPO_MELTED=3,
+	MPO_MILLED=4
 } TxtMpoAckCode_t;
 
 typedef enum
 {
-	MPO_PRODUCE=7
+	MPO_SOUND=1,
+	MPO_PRODUCE=2
 } TxtMpoDoCode_t;
 
 typedef enum
@@ -84,15 +87,17 @@ typedef enum
 	HBW_FETCHED=1,
 	HBW_STORED=2,
 	HBW_CALIB_NAV=3,
-	HBW_CALIB_END=4
+	HBW_CALIB_END=4,
+	HBW_FETCH_FAIL =5,
 } TxtHbwAckCode_t;
 
 typedef enum
 {
-	HBW_FETCHCONTAINER=1,
-	HBW_STORE_WP=2,
-	HBW_FETCH_WP=3,
-	HBW_STORECONTAINER=4
+	HBW_SOUND = 1,
+	HBW_FETCHCONTAINER=2,
+	HBW_STORE_WP=3,
+	HBW_FETCH_WP=4,
+	HBW_STORECONTAINER=5
 } TxtHbwDoCode_t;
 
 typedef enum

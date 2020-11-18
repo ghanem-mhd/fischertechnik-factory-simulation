@@ -119,6 +119,27 @@ public:
 		reqSLDstarted= true;
 	}
 
+	void makeSound(int code) {
+		SPDLOG_LOGGER_TRACE(spdlog::get("console"),"makeSound",0);
+		switch(code)
+		{
+		case 0:
+			sound.info1();
+			break;
+		case 1:
+			sound.info2();
+			break;
+		case 2:
+			sound.error();
+			break;
+		case 3:
+			sound.warn();
+			break;
+		default:
+			break;
+		}
+	}
+
 	//master
 	bool isEndConveyorBeltTriggered();
 

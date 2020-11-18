@@ -42,7 +42,7 @@ public:
 
 	bool store(TxtWorkpiece _wp);
 	bool storeContainer();
-	bool fetch(TxtWPType_t t);
+	bool fetch(std::string productDID);
 	bool fetchContainer();
 
 	StoragePos2 getNextStorePos() { return nextFetchPos; } //nextStorePos; }

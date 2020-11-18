@@ -87,11 +87,11 @@ inline const char * toString(TxtWPState_t v)
 class TxtWorkpiece {
 public:
 	TxtWorkpiece()
-		: tag_uid(""), type(WP_TYPE_NONE), state(WP_STATE_RAW) {}
+		: tag_uid(""), type(WP_TYPE_NONE), state(WP_STATE_RAW), product_DID("")  {}
 	TxtWorkpiece(const TxtWorkpiece& wp)
-		: tag_uid(wp.tag_uid), type(wp.type), state(wp.state) {};
-	TxtWorkpiece(std::string tag_uid, TxtWPType_t type, TxtWPState_t state)
-		: tag_uid(tag_uid), type(type), state(state) {}
+		: tag_uid(wp.tag_uid), type(wp.type), state(wp.state), product_DID(wp.product_DID) {};
+	TxtWorkpiece(std::string tag_uid, TxtWPType_t type, TxtWPState_t state, std::string product_DID)
+		: tag_uid(tag_uid), type(type), state(state), product_DID(product_DID)  {}
 	virtual ~TxtWorkpiece() {}
 
 	void printDebug() {
@@ -99,6 +99,7 @@ public:
 	}
 
 	std::string tag_uid;
+	std::string product_DID;
 	TxtWPType_t type;
 	TxtWPState_t state;
 };
