@@ -139,13 +139,15 @@ void TxtHighBayWarehouse::fsmStep()
 		if (fetchContainer())
 		{
 			assert(mqttclient);
-			mqttclient->publishHBW_Ack(HBW_FETCHED, reqVGRwp, TIMEOUT_MS_PUBLISH);
+			mqttclient->publishHBW_Ack(HBW_CONTAINER_FETCHED, reqVGRwp, TIMEOUT_MS_PUBLISH);
 
 			FSM_TRANSITION( STORE_WP, color=blue, label='req\nstore' );
 		}
 		else
 		{
-			FSM_TRANSITION( FAULT, color=red, label='error' );
+			assert(mqttclient);
+			mqttclient->publishHBW_Ack(HBW_FETCH_CONTAINER_FAIL, reqVGRwp, TIMEOUT_MS_PUBLISH);
+			FSM_TRANSITION( IDLE, color=green, label='conainter\nstored failed' );
 		}
 		break;
 	}
@@ -177,14 +179,14 @@ void TxtHighBayWarehouse::fsmStep()
 		if (reqVGRwp && fetch(reqVGRwp->product_DID))
 		{
 			assert(mqttclient);
-			mqttclient->publishHBW_Ack(HBW_FETCHED, reqVGRwp, TIMEOUT_MS_PUBLISH);
+			mqttclient->publishHBW_Ack(HBW_PRODCUT_FETCHED, reqVGRwp, TIMEOUT_MS_PUBLISH);
 			FSM_TRANSITION( FETCH_WP_WAIT, color=blue, label='wait req' );
 		}
 		else
 		{
 			assert(mqttclient);
-			mqttclient->publishHBW_Ack(HBW_FETCH_FAIL, reqVGRwp, TIMEOUT_MS_PUBLISH);
-			FSM_TRANSITION( IDLE, color=green, label='workpiece\nstored' );
+			mqttclient->publishHBW_Ack(HBW_FETCH_PRODUCT_FAIL, reqVGRwp, TIMEOUT_MS_PUBLISH);
+			FSM_TRANSITION( IDLE, color=green, label='workpiece\nstored failed' );
 		}
 		break;
 	}
