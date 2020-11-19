@@ -1114,7 +1114,6 @@ void TxtMqttFactoryClient::publishSLD_Ack(TxtSldAckCode_t code, TxtWPType_t type
 	}
 	pthread_mutex_unlock(&m_mutex);
 	SPDLOG_LOGGER_DEBUG(spdlog::get("console"), "pthread_mutex_unlock publishSLD_Ack",0);
-	resetCurrentValues();
 }
 
 	void TxtMqttFactoryClient::setTaskID(int newTaskID) {

@@ -111,7 +111,8 @@ typedef enum
 	SLD_EXIT=0,
 	SLD_STARTED=1,
 	SLD_SORTED=2,
-	SLD_CALIB_END=3
+	SLD_CALIB_END=3,
+	SLD_SORTED_FAILED=4
 } TxtSldAckCode_t;
 
 typedef enum

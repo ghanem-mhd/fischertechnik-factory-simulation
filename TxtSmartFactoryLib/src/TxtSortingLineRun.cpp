@@ -62,6 +62,7 @@ void TxtSortingLine::fsmStep()
 		//-------------------------------------------------------------
 		case IDLE:
 		{
+			mqttclient->resetCurrentValues();
 			printEntryState(IDLE);
 			setActStatus(false, SM_READY);
 			break;
@@ -85,18 +86,12 @@ void TxtSortingLine::fsmStep()
 			FSM_TRANSITION( IDLE, color=green, label='req\nquit' );
 			reqQuit = false;
 		}
-#ifdef __DOCFSM__
-		FSM_TRANSITION( FAULT, color=red, label='wait' );
-#endif
 		std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 		break;
 	}
 	//-----------------------------------------------------------------
 	case INIT:
 	{
-#ifdef __DOCFSM__ //TODO remove, needed for graph
-		FSM_TRANSITION( INIT );
-#endif
 		printState(INIT);
 		FSM_TRANSITION( IDLE, color=blue, label='initialized' );
 		break;
@@ -104,50 +99,16 @@ void TxtSortingLine::fsmStep()
 	//-----------------------------------------------------------------
 	case IDLE:
 	{
-		//printState(IDLE);
-		/*TODO wait req MPO
-		if (reqMPOproduced)
-		{
-			auto start = std::chrono::system_clock::now();
-			while (!isColorSensorTriggered())
-			{
-				auto end = std::chrono::system_clock::now();
-				auto dur = end-start;
-				auto diff_s = std::chrono::duration_cast< std::chrono::duration<float> >(dur).count();
-				double diff_max = 5.0;
-				if (diff_s > diff_max) {
-					FSM_TRANSITION( FAULT, color=red, label='timeout\n5 sec' );
-					break;
-				}
-				std::this_thread::sleep_for(std::chrono::milliseconds(10));
-			}
-
-			assert(mqttclient);
-			mqttclient->publishSLD_Ack(SLD_STARTED, ft::WP_TYPE_NONE, 0, TIMEOUT_MS_PUBLISH);
-
-			FSM_TRANSITION( START, color=blue, label='req\nMPO' );
-			reqMPOproduced = false;
-		}*/
 		if (reqVGRstart)
 		{
 			FSM_TRANSITION( START, color=blue, label='req\nVGR' );
 			reqVGRstart = false;
 		}
-		/*if (isColorSensorTriggered())
-		{
-			FSM_TRANSITION( START, color=blue, label='start' );
-		}
-		else*/
 		if (reqVGRcalib)
 		{
 			FSM_TRANSITION( CALIB_SLD, color=orange, label='req\ncalib'  );
 			reqVGRcalib = false;
 		}
-
-
-#ifdef __DOCFSM__
-		FSM_TRANSITION( IDLE, color=green, label='wait' );
-#endif
 		break;
 	}
 	//-----------------------------------------------------------------
@@ -169,15 +130,27 @@ void TxtSortingLine::fsmStep()
 			detectedColorValue = lastColorValue;
 			SPDLOG_LOGGER_DEBUG(spdlog::get("console"), "color value [min]: {} [{}]", lastColorValue, detectedColorValue);
 		}
-		if (isEjectionTriggered())
+
+		auto start = std::chrono::system_clock::now();
+		while (!isEjectionTriggered())
 		{
-			//min color is final color
+			auto end = std::chrono::system_clock::now();
+			auto dur = end-start;
+			auto diff_s = std::chrono::duration_cast< std::chrono::duration<float> >(dur).count();
+			double diff_max = 5.0;
+			if (diff_s > diff_max) {
+				assert(mqttclient);
+				mqttclient->publishSLD_Ack(SLD_SORTED_FAILED, TxtWPType_t::WP_TYPE_NONE, 0, TIMEOUT_MS_PUBLISH);
+				convBelt.stop();
+				FSM_TRANSITION( IDLE, color=green, label='timeout' );
+				break;
+			}
+			std::this_thread::sleep_for(std::chrono::milliseconds(10));
+		}
+		if (isEjectionTriggered()){
 			std::cout << "color final value: " << detectedColorValue << std::endl;
 			FSM_TRANSITION( START_COUNT, color=blue, label='start\ncounter' );
 		}
-#ifdef __DOCFSM__
-		FSM_TRANSITION( COLOR_DETECTION, color=blue, label='find min\nvalue' );
-#endif
 		break;
 	}
 	//-----------------------------------------------------------------
@@ -225,9 +198,6 @@ void TxtSortingLine::fsmStep()
 			break;
 		}
 		SPDLOG_LOGGER_DEBUG(spdlog::get("console"), "counter: {}",u16Counter);
-#ifdef __DOCFSM__
-		FSM_TRANSITION( CHECK_COUNT, color=blue, label='check\ncounter' );
-#endif
 		break;
 	}
 	//-----------------------------------------------------------------
@@ -260,51 +230,6 @@ void TxtSortingLine::fsmStep()
 		printState(SORTED);
 		convBelt.stop();
 		setActStatus(false, SM_READY);
-
-		/* TODO sorting line should work stand alone!
-		auto start = std::chrono::system_clock::now();
-		while (!isWhite() && !isRed() && !isBlue())
-		{
-			auto end = std::chrono::system_clock::now();
-			auto dur = end-start;
-			auto diff_s = std::chrono::duration_cast< std::chrono::duration<float> >(dur).count();
-			double diff_max = 10.0;
-			if (diff_s > diff_max) {
-				FSM_TRANSITION( FAULT, color=red, label='timeout\n5 sec' );
-				break;
-			}
-			std::this_thread::sleep_for(std::chrono::milliseconds(10));
-		}
-
-		if (isWhite())
-		{
-			if (getDetectedColor() != ft::WP_TYPE_WHITE)
-			{
-				FSM_TRANSITION( FAULT, color=red, label='color\nwrong W' );
-				break;
-			}
-		}
-		else if (isRed())
-		{
-			if (getDetectedColor() != ft::WP_TYPE_RED)
-			{
-				FSM_TRANSITION( FAULT, color=red, label='color\nwrong R' );
-				break;
-			}
-		}
-		else if (isBlue())
-		{
-			if (getDetectedColor() != ft::WP_TYPE_BLUE)
-			{
-				FSM_TRANSITION( FAULT, color=red, label='color\nwrong B' );
-				break;
-			}
-		}
-		else
-		{
-			FSM_TRANSITION( FAULT, color=red, label='color\nwrong' );
-			break;
-		}*/
 
 		assert(mqttclient);
 		mqttclient->publishSLD_Ack(SLD_SORTED, getDetectedColor(), lastColorValue, TIMEOUT_MS_PUBLISH);
@@ -377,9 +302,6 @@ void TxtSortingLine::fsmStep()
 			FSM_TRANSITION( CALIB_SLD_NEXT, color=orange, label='next\ncolor' );
 			break;
 		}
-#ifdef __DOCFSM__
-		FSM_TRANSITION( CALIB_SLD_DETECTION, color=orange, label='next' );
-#endif
 		break;
 	}
 	//-----------------------------------------------------------------
