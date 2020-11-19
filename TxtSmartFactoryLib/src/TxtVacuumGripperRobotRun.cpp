@@ -166,7 +166,12 @@ void TxtVacuumGripperRobot::fsmStep()
 		}
 		else if (reqStartDelivery)
 		{
-			FSM_TRANSITION( START_DELIVERY, color=blue, label='dsi' );
+			if (!dps.is_DIN()){
+				FSM_TRANSITION( START_DELIVERY, color=blue, label='dsi' );
+			}else{
+				mqttclient->publishVGR_Ack(VGR_INFO_FAILED_NO_PRODDUCT, NULL, TIMEOUT_MS_PUBLISH);
+				mqttclient->resetCurrentValues();
+			}
 			reqStartDelivery = false;
 		} else if (reqMoveHBW2MPO)
 		{
@@ -291,7 +296,8 @@ void TxtVacuumGripperRobot::fsmStep()
 		std::string uid = dps.nfcReadUID();
 		if (uid.empty())
 		{
-			FSM_TRANSITION( WRONG_COLOR, color=red, label='empty tag' );
+			mqttclient->publishVGR_Ack(VGR_NO_NFC_TAG, NULL, TIMEOUT_MS_PUBLISH);
+			FSM_TRANSITION( IDLE, color=green, label='next' );
 			break;
 		} else {
 			if (reqWP_HBW != 0) {
@@ -333,7 +339,8 @@ void TxtVacuumGripperRobot::fsmStep()
 		std::string uid = dps.nfcReadUID();
 		if (uid.empty())
 		{
-			FSM_TRANSITION( WRONG_COLOR, color=red, label='nfc error' );
+			mqttclient->publishVGR_Ack(VGR_NO_NFC_TAG, NULL, TIMEOUT_MS_PUBLISH);
+			FSM_TRANSITION( IDLE, color=green, label='next' );
 			break;
 		}
 
@@ -369,7 +376,8 @@ void TxtVacuumGripperRobot::fsmStep()
 		std::string uid = dps.nfcReadUID();
 		if (uid.empty())
 		{
-			FSM_TRANSITION( FAULT, color=red, label='nfc error' );
+			mqttclient->publishVGR_Ack(VGR_NO_NFC_TAG, NULL, TIMEOUT_MS_PUBLISH);
+			FSM_TRANSITION( IDLE, color=green, label='next' );
 			break;
 		}
 		FSM_TRANSITION( MOVE_PICKUP_WAIT, color=blue, label='nfc ok' );

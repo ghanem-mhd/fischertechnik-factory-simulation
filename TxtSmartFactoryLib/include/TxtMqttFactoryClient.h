@@ -64,7 +64,8 @@ typedef enum
 	VGR_ORDER_FINISHED = 6,
 	VGR_INFO_FAILED = 7,
 	VGR_SLD_FAILED  = 8,
-
+	VGR_INFO_FAILED_NO_PRODDUCT  = 9,
+	VGR_NO_NFC_TAG = 10,
 } TxtVgrAckCode_t;
 
 typedef enum
