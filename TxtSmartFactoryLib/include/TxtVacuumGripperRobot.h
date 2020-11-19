@@ -284,6 +284,11 @@ public:
 		reqStartDelivery = true;
 	}
 
+	void makeSound(int code, int r=1) {
+		SPDLOG_LOGGER_TRACE(spdlog::get("console"),"makeSound",0);
+		sound.play(code, r);
+	}
+
 	void stop();
 	void moveRef();
 	EncPos3 getPos3() {

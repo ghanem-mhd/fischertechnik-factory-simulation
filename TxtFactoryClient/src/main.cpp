@@ -158,7 +158,8 @@ class callback : public virtual mqtt::callback
 
 					if (code == ft::MPO_SOUND){
 						int soundID = root["soundID"].asInt();
-						mpo_.makeSound(soundID);
+						int repeat  = root["repeat"].asInt();
+						mpo_.makeSound(soundID, repeat);
 					}
 				}
 
@@ -256,7 +257,8 @@ class callback : public virtual mqtt::callback
 
 				if (code == ft::HBW_SOUND){
 					int soundID = root["soundID"].asInt();
-					hbw_.makeSound(soundID);
+					int repeat  = root["repeat"].asInt();
+					hbw_.makeSound(soundID, repeat);
 				}else{
 					int taskID = root["taskID"].asInt();
 					pcli->setTaskID(taskID);
@@ -501,77 +503,80 @@ class callback : public virtual mqtt::callback
 			Json::Value root;
 			try {
 				ssin >> root;
+				ft::TxtVgrCustomDoCode_t code = (ft::TxtVgrCustomDoCode_t)root["code"].asInt();
+				SPDLOG_LOGGER_DEBUG(spdlog::get("console"), "  ts:{} code:{}", sts, (int)code);
 
-				int taskID = root["taskID"].asInt();
-				pcli->setTaskID(taskID);
+				if (code == ft::VGR_SOUND){
+					int soundID = root["soundID"].asInt();
+					int repeat  = root["repeat"].asInt();
+					vgr_.makeSound(soundID, repeat);
+				}else{
+					int taskID = root["taskID"].asInt();
+					pcli->setTaskID(taskID);
+					int processID = root["processID"].asInt();
+					pcli->setProcessID(processID);
+					std::string productDID = root["productDID"].asString();
+					pcli->setProductDID(productDID);
 
-				std::string productDID = root["productDID"].asString();
-				pcli->setProductDID(productDID);
-
-				std::string sts = root["ts"].asString();
-				if (ft::trycheckTimestampTTL(sts))
-				{
-					ft::TxtVgrCustomDoCode_t code = (ft::TxtVgrCustomDoCode_t)root["code"].asInt();
-					SPDLOG_LOGGER_DEBUG(spdlog::get("console"), "  ts:{} code:{}", sts, (int)code);
-
-					ft::TxtWorkpiece* wp = NULL;
-					if (root["workpiece"] != Json::Value::null) {
-						wp = new ft::TxtWorkpiece();
-						wp->tag_uid = root["workpiece"]["id"].asString();
-						std::string stype0 = root["workpiece"]["type"].asString();
-						if (stype0 == "WHITE") {
-							wp->type = ft::WP_TYPE_WHITE;
-						} else if(stype0 == "RED") {
-							wp->type = ft::WP_TYPE_RED;
-						} else if (stype0 == "BLUE") {
-							wp->type = ft::WP_TYPE_BLUE;
-						} else {
-							wp->type = ft::WP_TYPE_NONE;
-						}
-						std::string sstate = root["workpiece"]["state"].asString();
-						if (sstate == "RAW") {
-							wp->state = ft::WP_STATE_RAW;
-						} else if(sstate == "PROCESSED") {
-							wp->state = ft::WP_STATE_PROCESSED;
-						} else if (sstate == "REJECTED") {
-							wp->state = ft::WP_STATE_REJECTED;
-						}
-					}
-
-					switch (code)
+					std::string sts = root["ts"].asString();
+					if (ft::trycheckTimestampTTL(sts))
 					{
-					case ft::VGR_GET_INFO:{
-						vgr_.requestStartDelivery();
-						break;
-					}
-					case ft::VGR_START_HBW:{
-						vgr_.requestHBWfetched(wp);
-						break;
-					}
-					case ft::VGR_START_MPO:{
-						vgr_.requestMPOstarted(wp);
-						break;
-					}
-					case ft::VGR_START_SLD:{
-						std::string stype1 = root["type"].asString();
-						SPDLOG_LOGGER_DEBUG(spdlog::get("console"), "  type:{}", stype1);
-						ft::TxtWPType_t type1 = ft::WP_TYPE_NONE;
-						if (stype1 == "WHITE") {
-							type1 = ft::WP_TYPE_WHITE;
-						} else if(stype1 == "RED") {
-							type1 = ft::WP_TYPE_RED;
-						} else if (stype1 == "BLUE") {
-							type1 = ft::WP_TYPE_BLUE;
+						ft::TxtWorkpiece* wp = NULL;
+						if (root["workpiece"] != Json::Value::null) {
+							wp = new ft::TxtWorkpiece();
+							wp->tag_uid = root["workpiece"]["id"].asString();
+							std::string stype0 = root["workpiece"]["type"].asString();
+							if (stype0 == "WHITE") {
+								wp->type = ft::WP_TYPE_WHITE;
+							} else if(stype0 == "RED") {
+								wp->type = ft::WP_TYPE_RED;
+							} else if (stype0 == "BLUE") {
+								wp->type = ft::WP_TYPE_BLUE;
+							} else {
+								wp->type = ft::WP_TYPE_NONE;
+							}
+							std::string sstate = root["workpiece"]["state"].asString();
+							if (sstate == "RAW") {
+								wp->state = ft::WP_STATE_RAW;
+							} else if(sstate == "PROCESSED") {
+								wp->state = ft::WP_STATE_PROCESSED;
+							} else if (sstate == "REJECTED") {
+								wp->state = ft::WP_STATE_REJECTED;
+							}
 						}
-						vgr_.requestSLDsorted(type1);
-						break;
+
+						switch (code)
+						{
+						case ft::VGR_GET_INFO:{
+							vgr_.requestStartDelivery();
+							break;
+						}
+						case ft::VGR_START_HBW:{
+							vgr_.requestHBWfetched(wp);
+							break;
+						}
+						case ft::VGR_START_SLD:{
+							std::string stype1 = root["type"].asString();
+							SPDLOG_LOGGER_DEBUG(spdlog::get("console"), "  type:{}", stype1);
+							ft::TxtWPType_t type1 = ft::WP_TYPE_NONE;
+							if (stype1 == "WHITE") {
+								type1 = ft::WP_TYPE_WHITE;
+							} else if(stype1 == "RED") {
+								type1 = ft::WP_TYPE_RED;
+							} else if (stype1 == "BLUE") {
+								type1 = ft::WP_TYPE_BLUE;
+							}
+							vgr_.requestSLDsorted(type1);
+							break;
+						}
+						case ft::VGR_HBW_MPO:{
+							vgr_.requestMoveFromHBWToMPO();
+						}
+						default:
+							break;
+						}
 					}
-					case ft::VGR_HBW_MPO:{
-						vgr_.requestMoveFromHBWToMPO();
-					}
-					default:
-						break;
-					}
+
 				}
 			} catch (const Json::RuntimeError& exc) {
 				std::cout << "Error: " << exc.what() << std::endl;
@@ -701,7 +706,8 @@ class callback : public virtual mqtt::callback
 
 					if (code == ft::SLD_SOUND){
 						int soundID = root["soundID"].asInt();
-						sld_.makeSound(soundID);
+						int repeat  = root["repeat"].asInt();
+						sld_.makeSound(soundID, repeat);
 					}
 				}
 			} catch (const Json::RuntimeError& exc) {

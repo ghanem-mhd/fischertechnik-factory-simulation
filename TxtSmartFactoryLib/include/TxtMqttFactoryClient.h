@@ -61,7 +61,10 @@ typedef enum
 	VGR_HBW_PICKED    = 3,
 	VGR_MPO_FINISHED  = 4,
 	VGR_SLD_FINISHED  = 5,
-	VGR_ORDER_FINISHED = 6
+	VGR_ORDER_FINISHED = 6,
+	VGR_INFO_FAILED = 7,
+	VGR_SLD_FAILED  = 8,
+
 } TxtVgrAckCode_t;
 
 typedef enum
@@ -74,11 +77,12 @@ typedef enum
 
 typedef enum
 {
-	VGR_GET_INFO = 1,
-	VGR_START_HBW = 2,
-	VGR_START_MPO = 3,
-	VGR_START_SLD = 4,
-	VGR_HBW_MPO = 5
+	VGR_SOUND = 1,
+	VGR_GET_INFO = 2,
+	VGR_START_HBW = 3,
+	VGR_HBW_MPO = 4,
+	VGR_START_SLD = 5,
+	VGR_START_MPO = 6
 } TxtVgrCustomDoCode_t;
 
 typedef enum
