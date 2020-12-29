@@ -31,7 +31,7 @@ This project contains a modified implementation for the fischertechnik [**Traini
 
 ## Overview
 
-The factory consists of the following stations or machines. Each one of them run a TXT controller:
+The factory consists of the following stations or machines. Each one of them run on a TXT controller.
 
 - **Vacuum Gripper Robot (VGR):** A three-axis robot with a vacuum suction gripper that can position products quickly and precisely in three-dimensional space. The vacuum gripper picks up products and moves them within the working space.
 - **High-Bay Warehouse (HBW):** It is a storage area that saves space and allows computer-aided storage and retrieval of products.
