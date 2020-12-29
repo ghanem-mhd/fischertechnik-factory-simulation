@@ -1,6 +1,33 @@
 # Fischertechnik Training Factory Industry 4.0 - Modified Implementation
 
-This project contains a modified implementation for the fischertechnik [**Training Factory Industry 4.0**](https://www.fischertechnik.de/en/service/elearning/teaching/lernfabrik-4). This fork is based on the txt_training_factory version v0.8.0 ([Release Notes](https://github.com/fischertechnik/txt_training_factory/releases)).
+<p align="center">
+  <a href="https://www.fischertechnik.de/en/products/teaching/training-models/536629-edu-factory-simulation-9v-education">
+    <img src="https://content.ugfischer.com/cbfiles/fischer/produktbilder/ft/FT_Fabrik_Simulation_9V.jpg" alt="Logo">
+  </a>
+</p>
+
+This project contains a modified implementation for the fischertechnik [**Training Factory Industry 4.0**](https://www.fischertechnik.de/en/service/elearning/teaching/lernfabrik-4). The fork is based on the txt_training_factory version v0.8.0 ([Release Notes](https://github.com/fischertechnik/txt_training_factory/releases)).
+
+<details open="open">
+  <summary>Table of Contents</summary>
+  <ol>
+    <li>
+      <a href="#overview">Overview</a>
+      <ul>
+        <li><a href="#vgr-tasks">VGR Tasks</a></li>
+        <li><a href="#hbw-tasks">HBW Tasks</a></li>
+        <li><a href="#mpo-tasks">MPO Tasks</a></li>
+        <li><a href="#sld-tasks">SLD Tasks</a></li>
+      </ul>
+    </li>
+    <li><a href="#installation">Installation</a></li>
+    <li><a href="#build">Build</a></li>
+    <li><a href="#network">Network</a></li>
+    <li><a href="#mqtt-interface">MQTT Interface</a></li>
+    <li><a href="#network">Network</a></li>
+    <li><a href="#api-reference-cc-library">API Reference C/C++ Library</a></li>
+  </ol>
+</details>
 
 ## Overview
 
@@ -27,7 +54,7 @@ These two processes are divided into tasks performed by different machines. To s
 - **Move from HBW to MPO:** This task moves the product from the HBW machine to the input station of the MPO machine.
 - **Pick sorted:** This task picks the sorted product from the SLD machine.
 
-### HBW Task
+### HBW Tasks
 
 - **Fetch container:** This task fetches an empty container if exists.
 - **Store product:** This task store a product in the warehouse if there is an empty place.
