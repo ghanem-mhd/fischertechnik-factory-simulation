@@ -127,8 +127,8 @@ Another local MQTT client can be added, taking note of the following parameters:
 
 | Component PUBLISH              | topic              | payload  | description   |
 | ------------------------------:|--------------------|----------|---------------|
-| State HBW                      | **f/i/state/hbw**  | `{"ts":"YYYY-MM-DDThh:mm:ss.fffZ", "station":"hbw", "code":0, "description":"text", "active":1, "target":""}` |
-| Stock HBW                      | **f/i/stock**      | `{"ts":"YYYY-MM-DDThh:mm:ss.fffZ", "stockItems": [{ "workpiece": { "id":"123456789ABCDE", "type":"<BLUE/WHITE/RED>", "state":"<RAW/PROCESSED>", "product_DID":"0x6b6b9266E98AFa468E60ce93DBC65eCb92c7f936" }, "location":"A1" },{ ... },{ "workpiece":null, "location":"B3" }] }` |
+| State HBW                      | **f/i/state/hbw**  | `{"ts":"YYYY-MM-DDThh:mm:ss.fffZ", "station":"hbw", "code":0, "description":"text", "active":1, "target":""}` | |
+| Stock HBW                      | **f/i/stock**      | `{"ts":"YYYY-MM-DDThh:mm:ss.fffZ", "stockItems": [{ "workpiece": { "id":"123456789ABCDE", "type":"<BLUE/WHITE/RED>", "state":"<RAW/PROCESSED>", "product_DID":"0x6b..." }, "location":"A1" },{ ... },{ "workpiece":null, "location":"B3" }] }` | |
 | Acknowledgment HBW             | **fl/hbw/ack**     | `{"ts":"YYYY-MM-DDThh:mm:ss.fffZ", "code":0, "workpiece":{...} }` | **code values**: HBW_EXIT=0, HBW_FETCHED=1, HBW_STORED=2, HBW_CALIB_NAV=3, HBW_CALIB_END=4, HBW_FETCH_PRODUCT_FAIL = 5, HBW_FETCH_CONTAINER_FAIL = 6, HBW_PRODUCT_FETCHED=7 |
 
 ## TxtFactoryVGR
