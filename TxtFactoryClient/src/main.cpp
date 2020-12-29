@@ -295,7 +295,7 @@ class callback : public virtual mqtt::callback
 
 						switch(code)
 						{
-						case ft::HBW_FETCHCONTAINER:
+						case ft::HBW_FETCH_CONTAINER:
 							hbw_.requestVGRfetchContainer();
 							break;
 						case ft::HBW_STORE_WP:
@@ -304,7 +304,7 @@ class callback : public virtual mqtt::callback
 						case ft::HBW_FETCH_WP:
 							hbw_.requestVGRfetch(wp);
 							break;
-						case ft::HBW_STORECONTAINER:
+						case ft::HBW_STORE_CONTAINER:
 							hbw_.requestVGRstoreContainer();
 							break;
 						default:

@@ -41,3 +41,24 @@ These two processes are divided into tasks performed by different machines. To s
 ### SLD Tasks
 
 - **Sorting:** This task sort the product and place in storage location according to the color of the product.
+
+## Installation
+
+The controllers programs for the machines can be found in the [bin](https://github.com/ghanem-mhd/txt_training_factory/tree/master/bin) folder. To install these programs follow the instructions using the [WEB server](doc/WEBServer.md). To install the original program provided by fischertechnik install the programs provided in the original repository [bin](https://github.com/ghanem-mhd/fischertechnik/tree/master/bin) folder.
+
+## Build
+
+You can import the git repository as a workspace in [eclipse CDT](https://www.eclipse.org/cdt/downloads.php) or build the programs with _make_. Please read the [building instructions](doc/IDE_Setup.md).
+
+## Network
+
+The next picture shows the [network](doc/Network_Config.md) overview with the TXT controllers.
+![Overview Network](doc/Overview_Network.PNG "Overview Network")
+
+## MQTT Interface
+
+The [MQTT Interface](TxtSmartFactoryLib/doc/MqttInterface.md) describes the topics and the payload of the MQTT clients and the configuration of the mosquitto MQTT bridge.
+
+## API Reference C/C++ Library
+
+The Doxygen documentation of the C/C ++ library classes can be found in the [API Reference](https://fischertechnik.github.io/txt_training_factory_doc/html/index.html).

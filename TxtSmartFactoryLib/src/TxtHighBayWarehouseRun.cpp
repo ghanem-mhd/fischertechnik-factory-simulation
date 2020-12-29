@@ -179,7 +179,7 @@ void TxtHighBayWarehouse::fsmStep()
 		if (reqVGRwp && fetch(reqVGRwp->product_DID))
 		{
 			assert(mqttclient);
-			mqttclient->publishHBW_Ack(HBW_PRODCUT_FETCHED, reqVGRwp, TIMEOUT_MS_PUBLISH);
+			mqttclient->publishHBW_Ack(HBW_PRODUCT_FETCHED, reqVGRwp, TIMEOUT_MS_PUBLISH);
 			FSM_TRANSITION( FETCH_WP_WAIT, color=blue, label='wait req' );
 		}
 		else
