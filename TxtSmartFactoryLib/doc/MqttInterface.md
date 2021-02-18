@@ -1,15 +1,16 @@
-MQTT Interface
-==============
+# MQTT Interface
 
 This document describes the MQTT interface of the local MQTT broker, the MQTT bridge and the remote MQTT broker.
 
-# MQTT Bridge / MQTT Remote Broker
+## MQTT Bridge / MQTT Remote Broker
 
 ## fischertechnik Cloud
+
 If you use the fischertechnik Cloud [https://www.fischertechnik-cloud.com](https://www.fischertechnik-cloud.com), then you have to pair your TXT controller by executing
 > *Settings* -> *Network* -> *Cloud Setup* -> *Pairing New*.
 
 ## Other Clouds
+
 If you want to connect your own remote MQTT broker, you can configure the MQTT bridge by creating/editing of the file `/etc/mosquitto/ft-txt-bridge-cloud.conf`.
 > **Attention**: For this you need root access rights!
 
@@ -32,38 +33,41 @@ try_private false
 bridge_attempt_unsubscribe false
 ```
 
-# MQTT Interface Dashboard
+## MQTT Interface Dashboard
+
 | Component SUBSCRIBE            | topic              | payload                      |
 | ------------------------------:|--------------------|------------------------------|
-| Environment Sensor             | **i/bme680**       | see *TxtFactoryMain PUBLISH* |               
-| Brightness Sensor              | **i/ldr**          | see *TxtFactoryMain PUBLISH* |               
-| Camera Picture                 | **i/cam**          | see *TxtFactoryMain PUBLISH* |               
-| Pos Pan-Tilt-Unit              | **i/ptu/pos**      | see *TxtFactoryMain PUBLISH* |               
-| Alert Message                  | **i/alert**        | see *TxtFactoryMain PUBLISH* |               
-| Broadcast                      | **i/broadcast**    | see *TxtFactoryMain PUBLISH* |               
-| State HBW                      | **f/i/state/hbw**  | see *TxtFactoryHBW PUBLISH*  |               
-| State VGR                      | **f/i/state/vgr**  | see *TxtFactoryVGR PUBLISH*  |               
-| State MPO                      | **f/i/state/mpo**  | see *TxtFactoryMPO PUBLISH*  |               
-| State SLD                      | **f/i/state/sld**  | see *TxtFactorySLD PUBLISH*  |              
-| State DSI (VGR)                | **f/i/state/dsi**  | see *TxtFactoryDSI PUBLISH*  |               
-| State DSO (VGR)                | **f/i/state/dso**  | see *TxtFactoryDSO PUBLISH*  |               
-| Stock HBW                      | **f/i/stock**      | see *TxtFactoryHBW PUBLISH*  |               
-| State Order(VGR)               | **f/i/order**      | see *TxtFactoryVGR PUBLISH*  |                
-| State NFC Device (VGR)         | **f/i/nfc/ds**     | see *TxtFactoryVGR PUBLISH*  |               
+| Environment Sensor             | **i/bme680**       | see *TxtFactoryMain PUBLISH* |
+| Brightness Sensor              | **i/ldr**          | see *TxtFactoryMain PUBLISH* |
+| Camera Picture                 | **i/cam**          | see *TxtFactoryMain PUBLISH* |
+| Pos Pan-Tilt-Unit              | **i/ptu/pos**      | see *TxtFactoryMain PUBLISH* |
+| Alert Message                  | **i/alert**        | see *TxtFactoryMain PUBLISH* |
+| Broadcast                      | **i/broadcast**    | see *TxtFactoryMain PUBLISH* |
+| State HBW                      | **f/i/state/hbw**  | see *TxtFactoryHBW PUBLISH*  |
+| State VGR                      | **f/i/state/vgr**  | see *TxtFactoryVGR PUBLISH*  |
+| State MPO                      | **f/i/state/mpo**  | see *TxtFactoryMPO PUBLISH*  |
+| State SLD                      | **f/i/state/sld**  | see *TxtFactorySLD PUBLISH*  |
+| State DSI (VGR)                | **f/i/state/dsi**  | see *TxtFactoryDSI PUBLISH*  |
+| State DSO (VGR)                | **f/i/state/dso**  | see *TxtFactoryDSO PUBLISH*  |
+| Stock HBW                      | **f/i/stock**      | see *TxtFactoryHBW PUBLISH*  |
+| State Order(VGR)               | **f/i/order**      | see *TxtFactoryVGR PUBLISH*  |
+| State NFC Device (VGR)         | **f/i/nfc/ds**     | see *TxtFactoryVGR PUBLISH*  |
 
 | Component PUBLISH              | topic              | payload                        |
 | ------------------------------:|--------------------|--------------------------------|
-| TXT Pairing Ack                | **c/link**         | internal usage                 |               
-| Config Rate Environment Sensor | **c/bme680**       | see *TxtFactoryMain SUBSCRIBE* |               
-| Config Rate Brightness Sensor  | **c/ldr**          | see *TxtFactoryMain SUBSCRIBE* |             
-| Config Rate Camera Picture     | **c/cam**          | see *TxtFactoryMain SUBSCRIBE* |            
-| Control Buttons Pan-Tilt-Unit  | **o/ptu**          | see *TxtFactoryMain SUBSCRIBE* |             
-| Quit Button                    | **f/o/state/ack**  | see *TxtFactoryVGR SUBSCRIBE* |              
-| Order Workpiece Buttons        | **f/o/order**      | see *TxtFactoryVGR SUBSCRIBE* |              
-| Action Buttons NFC Module      | **f/o/nfc/ds**     | see *TxtFactoryVGR SUBSCRIBE* |           
+| TXT Pairing Ack                | **c/link**         | internal usage                 |
+| Config Rate Environment Sensor | **c/bme680**       | see *TxtFactoryMain SUBSCRIBE* |
+| Config Rate Brightness Sensor  | **c/ldr**          | see *TxtFactoryMain SUBSCRIBE* |
+| Config Rate Camera Picture     | **c/cam**          | see *TxtFactoryMain SUBSCRIBE* |
+| Control Buttons Pan-Tilt-Unit  | **o/ptu**          | see *TxtFactoryMain SUBSCRIBE* |
+| Quit Button                    | **f/o/state/ack**  | see *TxtFactoryVGR SUBSCRIBE* |
+| Order Workpiece Buttons        | **f/o/order**      | see *TxtFactoryVGR SUBSCRIBE* |
+| Action Buttons NFC Module      | **f/o/nfc/ds**     | see *TxtFactoryVGR SUBSCRIBE* |
 
-# MQTT Interface Local Clients
+## MQTT Interface Local Clients
+
 Another local MQTT client can be added, taking note of the following parameters:
+
 * **host** (default): 192.168.0.10
 * **port** (default): 1883
 * **user** (default): txt
@@ -74,6 +78,7 @@ Another local MQTT client can be added, taking note of the following parameters:
 | **ts**       | YYYY-MM-DDThh:mm:ss.fffZ   |time stamp according to ISO8601: year:YYYY, month:MM, day:DD, hour:hh, minute:mm, second:ss, fraction:fff |
 
 ## TxtFactoryMain
+
 | Component SUBSCRIBE            | topic              | payload  | description   |
 | ------------------------------:|--------------------|----------|---------------|
 | TXT Pairing Ack                | **c/link**         |
@@ -83,10 +88,10 @@ Another local MQTT client can be added, taking note of the following parameters:
 | Control Buttons Pan-Tilt-Unit  | **o/ptu**          |
 | State HBW                      | **f/i/state/hbw**  |
 | State VGR                      | **f/i/state/vgr**  |
-| State MPO                      | **f/i/state/mpo**  | 
-| State SLD                      | **f/i/state/sld**  | 
-| State DSI (VGR)                | **f/i/state/dsi**  | 
-| State DSO (VGR)                | **f/i/state/dso**  | 
+| State MPO                      | **f/i/state/mpo**  |
+| State SLD                      | **f/i/state/sld**  |
+| State DSI (VGR)                | **f/i/state/dsi**  |
+| State DSO (VGR)                | **f/i/state/dso**  |
 
 | Component PUBLISH              | topic              | payload  | description   |
 | ------------------------------:|--------------------|----------|---------------|
@@ -99,55 +104,60 @@ Another local MQTT client can be added, taking note of the following parameters:
 | Joysticks                      | **fl/ssc/joy**     |                | |
 
 ## TxtFactoryMPO
+
 | Component SUBSCRIBE            | topic              | payload                      | description   |
 | ------------------------------:|--------------------|------------------------------|---------------|
 | Quit Button                    | **f/o/state/ack**  |  |
 | VGR Trigger                    | **fl/vgr/do**      | see *TxtFactoryVGR PUBLISH*  |
-| Acknowledgment SLD             | **fl/sld/ack**     | see *TxtFactorySLD PUBLISH*  |
+| MPO DO                         | **fl/mpo/do**      | `{"ts":"YYYY-MM-DDThh:mm:ss.fffZ", "code":integer, "taskID":integer, "processID":integer, "productDID":string  }` | **code values**: MPO_SOUND=1, MPO_PRODUCE=2  |
 
 | Component PUBLISH              | topic              | payload  | description   |
 | ------------------------------:|--------------------|----------|---------------|
 | State MPO                      | **f/i/state/mpo**  | `{"ts":"YYYY-MM-DDThh:mm:ss.fffZ", "station":"mpo", "code":0, "description":"text", "active":1, "target":""}` |
-| Acknowledgment MPO             | **fl/mpo/ack**     | `{"ts":"YYYY-MM-DDThh:mm:ss.fffZ", "code":0 }` | **code**: 0=MPO_EXIT, 1=MPO_STARTED, 2=MPO_PRODUCED |
+| Acknowledgment MPO             | **fl/mpo/ack**     | `{"ts":"YYYY-MM-DDThh:mm:ss.fffZ", "code":0 }` | **code values**: MPO_EXIT=0, MPO_STARTED=1, MPO_PRODUCED=2, MPO_MELTED=3, MPO_MILLED=4 |
 
 ## TxtFactoryHBW
+
 | Component SUBSCRIBE            | topic              | payload                      | description   |
 | ------------------------------:|--------------------|------------------------------|---------------|
 | Quit Button                    | **f/o/state/ack**  | |
 | Joysticks                      | **fl/ssc/joy**     | see *TxtFactoryMain PUBLISH* |
 | VGR Trigger                    | **fl/vgr/do**      | see *TxtFactoryVGR PUBLISH*  |
+| HBW DO                         | **fl/hbw/do**      | `{"ts":"YYYY-MM-DDThh:mm:ss.fffZ", "code":integer, "taskID":integer, "processID":integer, "productDID":string  }` | **code values**: HBW_SOUND=1, HBW_FETCH_CONTAINER=2, HBW_STORE_WP=3, HBW_FETCH_WP=4, HBW_STORE_CONTAINER=5  |
 
 | Component PUBLISH              | topic              | payload  | description   |
 | ------------------------------:|--------------------|----------|---------------|
-| State HBW                      | **f/i/state/hbw**  | `{"ts":"YYYY-MM-DDThh:mm:ss.fffZ", "station":"hbw", "code":0, "description":"text", "active":1, "target":""}` |
-| Stock HBW                      | **f/i/stock**      | `{"ts":"YYYY-MM-DDThh:mm:ss.fffZ", "stockItems": [{ "workpiece": { "id":"123456789ABCDE", "type":"<BLUE/WHITE/RED>", "state":"<RAW/PROCESSED>" }, "location":"A1" },{ ... },{ "workpiece":null, "location":"B3" }] }` |
-| Acknowledgment HBW             | **fl/hbw/ack**     | `{"ts":"YYYY-MM-DDThh:mm:ss.fffZ", "code":0, "workpiece":{...} }` | **code**: 0=HBW_EXIT, 1=HBW_FETCHED, 2=HBW_STORED, 3=HBW_CALIB_NAV, 4=HBW_CALIB_END |
+| State HBW                      | **f/i/state/hbw**  | `{"ts":"YYYY-MM-DDThh:mm:ss.fffZ", "station":"hbw", "code":0, "description":"text", "active":1, "target":""}` | |
+| Stock HBW                      | **f/i/stock**      | `{"ts":"YYYY-MM-DDThh:mm:ss.fffZ", "stockItems": [{ "workpiece": { "id":"123456789ABCDE", "type":"<BLUE/WHITE/RED>", "state":"<RAW/PROCESSED>", "product_DID":"0x6b..." }, "location":"A1" },{ ... },{ "workpiece":null, "location":"B3" }] }` | |
+| Acknowledgment HBW             | **fl/hbw/ack**     | `{"ts":"YYYY-MM-DDThh:mm:ss.fffZ", "code":0, "workpiece":{...} }` | **code values**: HBW_EXIT=0, HBW_FETCHED=1, HBW_STORED=2, HBW_CALIB_NAV=3, HBW_CALIB_END=4, HBW_FETCH_PRODUCT_FAIL = 5, HBW_FETCH_CONTAINER_FAIL = 6, HBW_PRODUCT_FETCHED=7 |
 
 ## TxtFactoryVGR
+
 | Component SUBSCRIBE            | topic              | payload                      | description               |
 | ------------------------------:|--------------------|------------------------------|---------------------------|
 | Quit Button                    | **f/o/state/ack**  | `{"ts":"YYYY-MM-DDThh:mm:ss.fffZ"}` | |
-| Order Workpiece Buttons        | **f/o/order**      | `{"ts":"YYYY-MM-DDThh:mm:ss.fffZ", "type":"BLUE"}` | **type**: BLUE, WHITE, RED
 | Action Buttons NFC Module      | **f/o/nfc/ds**     | `{"ts":"YYYY-MM-DDThh:mm:ss.fffZ", "cmd":"read"}` | **cmd**: delete, read |
 | Joysticks                      | **fl/ssc/joy**     | see *TxtFactoryMain PUBLISH* |
 | Acknowledgment MPO             | **fl/mpo/ack**     | see *TxtFactoryMPO PUBLISH*  |
 | Acknowledgment HBW             | **fl/hbw/ack**     | see *TxtFactoryHBW PUBLISH*  |
 | Acknowledgment SLD             | **fl/sld/ack**     | see *TxtFactorySLD PUBLISH*  |
+| VGR DO                         | **fl/vgr/do2**     | `{"ts":"YYYY-MM-DDThh:mm:ss.fffZ", "code":integer, "taskID":integer, "processID":integer, "productDID":string  }` | **code values**: VGR_SOUND = 1, VGR_GET_INFO = 2, VGR_START_HBW = 3, VGR_HBW_MPO = 4, VGR_START_SLD = 5, VGR_START_MPO = 6  |
 
 | Component PUBLISH              | topic              | payload  | description   |
 | ------------------------------:|--------------------|----------|---------------|
 | State VGR                      | **f/i/state/vgr**  | `{"ts":"YYYY-MM-DDThh:mm:ss.fffZ", "station":"vgr", "code":0, "description":"text", "active":1, "target":"hbw"}` | |
 | State DSI (VGR)                | **f/i/state/dsi**  | `{"ts":"YYYY-MM-DDThh:mm:ss.fffZ", "station":"dsi", "code":0, "description":"text", "active":1}` | |
 | State DSO (VGR)                | **f/i/state/dso**  | `{"ts":"YYYY-MM-DDThh:mm:ss.fffZ", "station":"dso", "code":0, "description":"text", "active":1}` | |
-| VGR Trigger                    | **fl/vgr/do**      | `{"ts":"YYYY-MM-DDThh:mm:ss.fffZ", "code":0, "workpiece":{...} }`| 	**code**: 0=VGR_EXIT, 1=VGR_HBW_FETCHCONTAINER, 2=VGR_HBW_STORE_WP, 3=VGR_HBW_FETCH_WP, 4=VGR_HBW_STORECONTAINER, 5=VGR_HBW_RESETSTORAGE, 6=VGR_HBW_CALIB, 7=VGR_MPO_PRODUCE, 8=VGR_SLD_START |
+| VGR Trigger                    | **fl/vgr/do**      | `{"ts":"YYYY-MM-DDThh:mm:ss.fffZ", "code":0, "workpiece":{...} }`|  **code values**: VGR_EXIT=0, VGR_HBW_RESETSTORAGE=5, VGR_HBW_CALIB=6,VGR_SLD_CALIB=9 |
 
 ## TxtFactorySLD
+
 | Component SUBSCRIBE            | topic              | payload                     | description   |
 | ------------------------------:|--------------------|-----------------------------|---------------|
 | Quit Button                    | **f/o/state/ack**  |
-| Acknowledgment MPO             | **fl/mpo/ack**     | see *TxtFactoryMPO PUBLISH* |
+| SLD DO                         | **fl/sld/do**      | `{"ts":"YYYY-MM-DDThh:mm:ss.fffZ", "code":integer, "taskID":integer, "processID":integer, "productDID":string  }` | **code values**: SLD_SOUND=1, SLD_START=2  |
 
 | Component PUBLISH              | topic              | payload  | description   |
 | ------------------------------:|--------------------|----------|---------------|
 | State SLD                      | **f/i/state/sld**  | `{"ts":"YYYY-MM-DDThh:mm:ss.fffZ", "station":"sld", "code":0, "description":"text", "active":1, "target":"hbw"}` |
-| Acknowledgment SLD             | **fl/sld/ack**     | `{"ts":"YYYY-MM-DDThh:mm:ss.fffZ", "code":0, "type":<>, "colorValue":<> }` | **code**: 0=SLD_EXIT, 1=SLD_STARTED, 2=SLD_SORTED |
+| Acknowledgment SLD             | **fl/sld/ack**     | `{"ts":"YYYY-MM-DDThh:mm:ss.fffZ", "code":0, "type":<>, "colorValue":<> }` | **code values**: SLD_EXIT=0, SLD_STARTED=1, SLD_SORTED=2, SLD_CALIB_END=3, SLD_SORTED_FAILED=4 |
