@@ -130,23 +130,6 @@ void TxtSortingLine::fsmStep()
 			detectedColorValue = lastColorValue;
 			SPDLOG_LOGGER_DEBUG(spdlog::get("console"), "color value [min]: {} [{}]", lastColorValue, detectedColorValue);
 		}
-
-		auto start = std::chrono::system_clock::now();
-		while (!isEjectionTriggered())
-		{
-			auto end = std::chrono::system_clock::now();
-			auto dur = end-start;
-			auto diff_s = std::chrono::duration_cast< std::chrono::duration<float> >(dur).count();
-			double diff_max = 5.0;
-			if (diff_s > diff_max) {
-				assert(mqttclient);
-				mqttclient->publishSLD_Ack(SLD_SORTED_FAILED, TxtWPType_t::WP_TYPE_NONE, 0, TIMEOUT_MS_PUBLISH);
-				convBelt.stop();
-				FSM_TRANSITION( IDLE, color=green, label='timeout' );
-				break;
-			}
-			std::this_thread::sleep_for(std::chrono::milliseconds(10));
-		}
 		if (isEjectionTriggered()){
 			std::cout << "color final value: " << detectedColorValue << std::endl;
 			FSM_TRANSITION( START_COUNT, color=blue, label='start\ncounter' );
